@@ -2,10 +2,17 @@ import type { IJudgeEngine, JudgeResult, JudgeStatus } from "./types";
 import type { JudgeConfig } from "@/config/judge";
 import { isSafeImageUrl } from "@/lib/security";
 
-function safeBase64Decode(str: string | null): string {
+function utf8ToBase64(str: string): string {
+  const bytes = new TextEncoder().encode(str);
+  return btoa(String.fromCharCode(...bytes));
+}
+
+function base64ToUtf8(str: string | null): string {
   if (!str) return "";
   try {
-    return decodeURIComponent(escape(atob(str)));
+    const binary = atob(str);
+    const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
+    return new TextDecoder().decode(bytes);
   } catch {
     return "";
   }
@@ -113,9 +120,9 @@ export class Judge0Engine implements IJudgeEngine {
         "X-RapidAPI-Host": hostname,
       },
       body: JSON.stringify({
-        source_code: btoa(unescape(encodeURIComponent(code))),
+        source_code: utf8ToBase64(code),
         language_id: languageId,
-        stdin: btoa(unescape(encodeURIComponent(input))),
+        stdin: utf8ToBase64(input),
         cpu_time_limit: timeLimit,
         memory_limit: this.cfg.memoryLimit * 1000, // KB
       }),
@@ -178,8 +185,8 @@ export class Judge0Engine implements IJudgeEngine {
         continue;
       }
 
-      const stdout = safeBase64Decode(data.stdout);
-      const stderr = safeBase64Decode(data.stderr);
+      const stdout = base64ToUtf8(data.stdout);
+      const stderr = base64ToUtf8(data.stderr);
 
       const status = this.mapStatus(data.status.id);
       const time = parseFloat(data.time || "0") * 1000;

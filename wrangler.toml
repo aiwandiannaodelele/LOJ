@@ -1,11 +1,9 @@
 #:schema node_modules/wrangler/config-schema.json
 name = "loj"
-compatibility_date = "2024-12-01"
+compatibility_date = "2025-05-01"
 compatibility_flags = ["nodejs_compat"]
-
-# D1 Database binding — 部署前需创建数据库并填入 database_id
-# wrangler d1 create loj-db
+pages_build_output_dir = ".open-next"
 [[d1_databases]]
 binding = "DB"
 database_name = "loj-db"
-database_id = "YOUR_D1_DATABASE_ID"
+database_id = "" # 运行 `npx wrangler d1 create loj-db` 后填写
