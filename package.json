@@ -11,7 +11,8 @@
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
-    "cf:deploy": "prisma generate && next build && opennextjs-cloudflare build && wrangler pages deploy"
+    "cf:build": "prisma generate && next build && opennextjs-cloudflare build",
+    "cf:deploy": "npm run cf:build && wrangler pages deploy"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
