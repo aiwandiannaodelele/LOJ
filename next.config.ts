@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  /* Cloudflare Pages 部署适配 */
+  ...(process.env.OPENNEXT_CLOUDFLARE ? { output: "standalone" } : {}),
 };
 
 export default nextConfig;

@@ -1,26 +1,360 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
   --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.52 0.1 155);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.96 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.96 0 0);
+  --muted-foreground: oklch(0.55 0 0);
+  --accent: oklch(0.96 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.92 0 0);
+  --input: oklch(0.92 0 0);
+  --ring: oklch(0.52 0.1 155);
+  --chart-1: oklch(0.52 0.1 155);
+  --chart-2: oklch(0.55 0.12 155);
+  --chart-3: oklch(0.45 0.08 155);
+  --chart-4: oklch(0.72 0.1 145);
+  --chart-5: oklch(0.38 0.06 155);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.98 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.52 0.1 155);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.96 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.92 0 0);
+  --sidebar-ring: oklch(0.52 0.1 155);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.185 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.185 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.65 0.12 155);
+  --primary-foreground: oklch(0.145 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.6 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(0.27 0 0);
+  --input: oklch(0.27 0 0);
+  --ring: oklch(0.65 0.12 155);
+  --chart-1: oklch(0.65 0.14 155);
+  --chart-2: oklch(0.55 0.12 155);
+  --chart-3: oklch(0.45 0.08 155);
+  --chart-4: oklch(0.72 0.1 145);
+  --chart-5: oklch(0.38 0.06 155);
+  --sidebar: oklch(0.165 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.65 0.12 155);
+  --sidebar-primary-foreground: oklch(0.145 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(0.27 0 0);
+  --sidebar-ring: oklch(0.65 0.12 155);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    font-size: 17px;
+    font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  }
+  body {
+    @apply bg-background text-foreground;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* BlockNote editor wrapper styles */
+.bn-editor-wrapper {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
 }
+.bn-editor-wrapper .bn-editor {
+  min-height: 200px;
+  padding-top: 12px !important;
+  background: var(--card) !important;
+  color: var(--foreground) !important;
+}
+.dark .bn-editor-wrapper .bn-editor {
+  background: var(--card) !important;
+  color: var(--foreground) !important;
+}
+.bn-preview-wrapper .bn-editor {
+  min-height: auto;
+  padding: 2px 0;
+  background: transparent !important;
+}
+.bn-preview-wrapper .bn-editor p,
+.bn-preview-wrapper .bn-editor h1,
+.bn-preview-wrapper .bn-editor h2,
+.bn-preview-wrapper .bn-editor h3,
+.bn-preview-wrapper .bn-editor li {
+  color: var(--foreground) !important;
+}
+.bn-preview-wrapper .bn-side-menu,
+.bn-preview-wrapper .bn-formatting-toolbar,
+.bn-preview-wrapper .bn-link-toolbar,
+.bn-preview-wrapper .bn-suggestion-menu {
+  display: none !important;
+}
+
+/* ── BlockNote 质感优化 ── */
+
+/* 1. 编辑器细边框（与 shadcn Input 一致） */
+.bn-editor-wrapper {
+  border: 1px solid hsl(var(--input));
+  border-radius: calc(var(--radius) - 2px);
+  overflow: hidden;
+}
+.bn-editor-wrapper .bn-editor {
+  outline: none !important;
+  box-shadow: none !important;
+}
+.bn-editor-wrapper .bn-editor:focus-visible {
+  outline: none !important;
+}
+
+/* 2. 侧栏加号 & 拖拽手柄 — 变小、变淡灰 */
+.bn-shadcn .bn-side-menu .bn-button {
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px !important;
+  min-height: 18px !important;
+  color: #b0b0b0 !important;
+  opacity: 0.5;
+  transition: opacity 0.15s ease;
+}
+.bn-shadcn .bn-side-menu .bn-button:hover {
+  opacity: 1;
+  color: #888888 !important;
+  background: transparent !important;
+}
+.bn-shadcn .bn-side-menu .bn-button svg {
+  width: 14px !important;
+  height: 14px !important;
+}
+
+/* 3. 上传/嵌入面板 tab 高亮 */
+.bn-shadcn [data-slot="tabs"] [data-slot="tabs-list"] [data-slot="tabs-trigger"][data-active] {
+  background: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
+  box-shadow: none !important;
+}
+.bn-shadcn [data-slot="tabs"] [data-slot="tabs-list"] [data-slot="tabs-trigger"]:not([data-active]):hover {
+  color: hsl(var(--foreground)) !important;
+}
+
+/* ── Monaco Editor 控件：低饱和灰色为主，圆角，绿色仅保留在菜单/命令面板选中 ── */
+
+/* ========== 右键菜单 ========== */
+body .monaco-menu-container .monaco-action-bar .action-item:hover,
+body .monaco-menu-container .monaco-action-bar .action-item.focused,
+body .monaco-menu-container .monaco-action-bar .action-item.active,
+body .monaco-menu-container .monaco-action-bar .action-item:hover .action-label,
+body .monaco-menu-container .monaco-action-bar .action-item.focused .action-label,
+body .monaco-menu-container .monaco-action-bar .action-item.active .action-label {
+  background-color: #10b981 !important;
+  color: #ffffff !important;
+}
+body .monaco-menu-container .monaco-action-bar .action-item:hover .keybinding,
+body .monaco-menu-container .monaco-action-bar .action-item.focused .keybinding,
+body .monaco-menu-container .monaco-action-bar .action-item.active .keybinding {
+  color: #ffffff !important;
+  opacity: 0.85;
+}
+body .monaco-menu-container .monaco-action-bar .action-label.separator {
+  border-bottom: 1px solid #e5e7eb !important;
+}
+body .monaco-menu-container .monaco-action-bar .action-item .action-label.checked::before {
+  color: #10b981 !important;
+}
+
+/* ========== Command Palette ========== */
+body .quick-input-widget .monaco-list .monaco-list-row.focused,
+body .quick-input-widget .monaco-list .monaco-list-row.focused:hover,
+body .quick-input-widget .monaco-list .monaco-list-row.selected,
+body .quick-input-widget .monaco-list .monaco-list-row.selected:hover {
+  background-color: #10b981 !important;
+}
+body .quick-input-widget .monaco-list .monaco-list-row.focused .monaco-icon-label,
+body .quick-input-widget .monaco-list .monaco-list-row.selected .monaco-icon-label,
+body .quick-input-widget .monaco-list .monaco-list-row.focused .label-name,
+body .quick-input-widget .monaco-list .monaco-list-row.selected .label-name,
+body .quick-input-widget .monaco-list .monaco-list-row.focused .keybinding,
+body .quick-input-widget .monaco-list .monaco-list-row.selected .keybinding,
+body .quick-input-widget .monaco-list .monaco-list-row.focused .monaco-keybinding-key,
+body .quick-input-widget .monaco-list .monaco-list-row.selected .monaco-keybinding-key {
+  color: #ffffff !important;
+}
+body .quick-input-widget .monaco-list .monaco-list-row.focused .keybinding .monaco-keybinding-key,
+body .quick-input-widget .monaco-list .monaco-list-row.selected .keybinding .monaco-keybinding-key {
+  background-color: rgba(255,255,255,0.2) !important;
+  border-color: rgba(255,255,255,0.3) !important;
+}
+/* ========== Suggest widget ========== */
+body .suggest-widget .monaco-list .monaco-list-row.focused,
+body .suggest-widget .monaco-list .monaco-list-row.focused:hover,
+body .suggest-widget .monaco-list .monaco-list-row.selected,
+body .suggest-widget .monaco-list .monaco-list-row.selected:hover {
+  background-color: #10b981 !important;
+}
+body .suggest-widget .monaco-list .monaco-list-row.focused .monaco-icon-label,
+body .suggest-widget .monaco-list .monaco-list-row.selected .monaco-icon-label,
+body .suggest-widget .monaco-list .monaco-list-row.focused .codicon,
+body .suggest-widget .monaco-list .monaco-list-row.selected .codicon,
+body .suggest-widget .monaco-list .monaco-list-row.focused .label-name,
+body .suggest-widget .monaco-list .monaco-list-row.selected .label-name {
+  color: #ffffff !important;
+}
+body .suggest-widget .monaco-list .monaco-list-row.focused .monaco-highlighted-label .highlight,
+body .suggest-widget .monaco-list .monaco-list-row.selected .monaco-highlighted-label .highlight {
+  color: #ffffff !important;
+  font-weight: 700;
+}
+
+/* ========== Parameter hints ========== */
+body .monaco-editor .parameter-hints-widget .monaco-list .monaco-list-row.focused {
+  background-color: #10b981 !important;
+}
+body .monaco-editor .parameter-hints-widget .monaco-list .monaco-list-row.focused .monaco-icon-label {
+  color: #ffffff !important;
+}
+
+/* ========== 暗色模式 ========== */
+.dark body .monaco-menu-container .monaco-action-bar .action-item:hover,
+.dark body .monaco-menu-container .monaco-action-bar .action-item.focused,
+.dark body .monaco-menu-container .monaco-action-bar .action-item.active,
+.dark body .monaco-menu-container .monaco-action-bar .action-item:hover .action-label,
+.dark body .monaco-menu-container .monaco-action-bar .action-item.focused .action-label,
+.dark body .monaco-menu-container .monaco-action-bar .action-item.active .action-label {
+  background-color: #10b981 !important;
+  color: #ffffff !important;
+}
+.dark body .monaco-menu-container .monaco-action-bar .action-item:hover .keybinding,
+.dark body .monaco-menu-container .monaco-action-bar .action-item.focused .keybinding,
+.dark body .monaco-menu-container .monaco-action-bar .action-item.active .keybinding {
+  color: #ffffff !important;
+}
+.dark body .monaco-menu-container .monaco-action-bar .action-label.separator {
+  border-bottom-color: #374151 !important;
+}
+
+.dark body .quick-input-widget .monaco-list .monaco-list-row.focused,
+.dark body .quick-input-widget .monaco-list .monaco-list-row.focused:hover,
+.dark body .quick-input-widget .monaco-list .monaco-list-row.selected,
+.dark body .quick-input-widget .monaco-list .monaco-list-row.selected:hover {
+  background-color: #10b981 !important;
+}
+.dark body .quick-input-widget .monaco-list .monaco-list-row.focused .monaco-icon-label,
+.dark body .quick-input-widget .monaco-list .monaco-list-row.selected .monaco-icon-label,
+.dark body .quick-input-widget .monaco-list .monaco-list-row.focused .label-name,
+.dark body .quick-input-widget .monaco-list .monaco-list-row.selected .label-name,
+.dark body .quick-input-widget .monaco-list .monaco-list-row.focused .keybinding,
+.dark body .quick-input-widget .monaco-list .monaco-list-row.selected .keybinding {
+  color: #ffffff !important;
+}
+.dark body .quick-input-widget .monaco-list .monaco-list-row.focused .keybinding .monaco-keybinding-key,
+.dark body .quick-input-widget .monaco-list .monaco-list-row.selected .keybinding .monaco-keybinding-key {
+  background-color: rgba(255,255,255,0.2) !important;
+  border-color: rgba(255,255,255,0.3) !important;
+  color: #ffffff !important;
+}
+.dark body .suggest-widget .monaco-list .monaco-list-row.focused,
+.dark body .suggest-widget .monaco-list .monaco-list-row.focused:hover,
+.dark body .suggest-widget .monaco-list .monaco-list-row.selected,
+.dark body .suggest-widget .monaco-list .monaco-list-row.selected:hover {
+  background-color: #10b981 !important;
+}
+.dark body .suggest-widget .monaco-list .monaco-list-row.focused .monaco-icon-label,
+.dark body .suggest-widget .monaco-list .monaco-list-row.selected .monaco-icon-label,
+.dark body .suggest-widget .monaco-list .monaco-list-row.focused .codicon,
+.dark body .suggest-widget .monaco-list .monaco-list-row.selected .codicon,
+.dark body .suggest-widget .monaco-list .monaco-list-row.focused .label-name,
+.dark body .suggest-widget .monaco-list .monaco-list-row.selected .label-name {
+  color: #ffffff !important;
+}
+.dark body .suggest-widget .monaco-list .monaco-list-row.focused .monaco-highlighted-label .highlight,
+.dark body .suggest-widget .monaco-list .monaco-list-row.selected .monaco-highlighted-label .highlight {
+  color: #ffffff !important;
+}
+
+.dark body .monaco-editor .parameter-hints-widget .monaco-list .monaco-list-row.focused {
+  background-color: #10b981 !important;
+}
+.dark body .monaco-editor .parameter-hints-widget .monaco-list .monaco-list-row.focused .monaco-icon-label {
+  color: #ffffff !important;
+}
+
+/* AI Sidebar animation */
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+

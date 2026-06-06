@@ -1,0 +1,346 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model UserGroup {
+  id               Int     @id @default(autoincrement())
+  name             String
+  isAdmin          Boolean @default(false)
+  storageLimit     Int     @default(2147483648) // 2GB default
+  color            String  @default("#64748b")
+  isDefault        Boolean @default(false)
+  priority         Int     @default(0)
+
+  users User[]
+}
+
+model User {
+  id            Int      @id @default(autoincrement())
+  name          String
+  email         String   @unique
+  password      String
+  role          String   @default("user") // legacy compat
+  userGroupId   Int      @default(1)
+  storageLimit  Int?     // bytes, null = follow group
+  bio           String   @default("")
+  signature     String   @default("")
+  avatar        String   @default("")
+  githubUsername String  @default("")
+  websiteUrl    String   @default("")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  userGroup   UserGroup @relation(fields: [userGroupId], references: [id], onDelete: Restrict)
+  submissions Submission[]
+  discussions Discussion[]
+  discussionReplies DiscussionReply[]
+  files File[]
+}
+
+model Problem {
+  id             Int      @id @default(autoincrement())
+  title          String
+  slug           String   @unique
+  difficulty     String
+  description    String
+  inputDesc      String
+  outputDesc     String
+  sampleInput    String
+  sampleOutput   String
+  selfTestSamples String   @default("[]")
+  testCases      String
+  timeLimit      Int      @default(5)
+  memoryLimit    Int      @default(256)
+  tags           String   @default("[]")
+  pinyin         String   @default("")
+  aiMode         String   @default("")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  submissions Submission[]
+  discussions Discussion[]
+}
+
+model Submission {
+  id         Int      @id @default(autoincrement())
+  problemId  Int
+  userId     Int
+  language   String   @default("cpp")
+  code       String
+  status     String
+  stdout     String?
+  stderr     String?
+  time       Int?
+  memory     Int?
+  createdAt  DateTime @default(now())
+
+  problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([problemId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([userId])
+}
+
+model Discussion {
+  id          Int      @id @default(autoincrement())
+  problemId   Int?
+  userId      Int
+  title       String
+  content     String
+  isPinned    Boolean  @default(false)
+  isAnnouncement Boolean @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  problem     Problem? @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  replies     DiscussionReply[]
+
+  @@index([problemId])
+  @@index([createdAt])
+  @@index([isPinned])
+}
+
+model DiscussionReply {
+  id           Int      @id @default(autoincrement())
+  discussionId Int
+  userId       Int
+  content      String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  discussion   Discussion @relation(fields: [discussionId], references: [id], onDelete: Cascade)
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([discussionId])
+  @@index([createdAt])
+}
+
+model File {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  name      String
+  path      String   @default("/") // 虚拟路径如 /folder/sub/
+  size      Int      @default(0)    // bytes
+  mimeType  String   @default("")
+  url       String   @default("")   // 存储返回的 URL
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([path])
+}
+
+model Settings {
+  id                Int      @id @default(autoincrement())
+  siteName          String   @default("LOJ")
+  siteIcon          String   @default("")
+  imageHostingUrl   String   @default("")
+  submitCooldown    Int      @default(5)
+  runCooldown       Int      @default(3)
+  maxSubmitsPerHour Int      @default(60)
+  maxRegistersPerHour Int    @default(5)
+  allowRegistration Boolean  @default(true)
+  footerText        String   @default("")
+  aiApiKey          String   @default("")
+  aiBaseUrl         String   @default("")
+  aiModels          String   @default("[]")
+  trainingEnabled   Boolean  @default(true)
+  contestEnabled    Boolean  @default(true)
+  rankEnabled       Boolean  @default(true)
+  discussionEnabled        Boolean  @default(true)
+  showCustomPagesSeparator Boolean  @default(true)
+  siteSubtitle             String   @default("在线评测系统")
+  aiEnabled                Boolean  @default(true)
+  judgeEngine              String   @default("onecompiler")
+  judgeConfig              String   @default("{}")
+  judgeCustomCode          String   @default("")
+  storageProvider          String   @default("database")
+  storageS3Endpoint        String   @default("")
+  storageS3Bucket          String   @default("")
+  storageS3AccessKey         String   @default("")
+  storageS3SecretKey         String   @default("")
+  storageS3Region            String   @default("")
+  storageImageHostingUrl   String   @default("")
+  maxFileSize              Int      @default(20971520) // 20MB
+  homepageAnnouncement     String   @default("")
+  homepageSlogan           String   @default("")
+  homepageShowSubmissions  Boolean  @default(false)
+  homepageShowDiscussions  Boolean  @default(false)
+  updatedAt                DateTime @updatedAt
+}
+
+model CustomPage {
+  id        Int      @id @default(autoincrement())
+  slug      String   @unique
+  title     String
+  content   String
+  icon      String   @default("FileText")
+  pageType  String   @default("html")
+  isPublic  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ── Contest ──
+model Contest {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String   @default("")
+  type        String   @default("ACM") // ACM | OI
+  startTime   DateTime
+  endTime     DateTime
+  password    String?  // null = 公开
+  isPublic    Boolean  @default(true)
+  createdBy   Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  problems     ContestProblem[]
+  participants ContestParticipant[]
+  submissions  ContestSubmission[]
+  announcements ContestAnnouncement[]
+}
+
+// 比赛题目：独立存储，不引用 Problem
+model ContestProblem {
+  id            Int      @id @default(autoincrement())
+  contestId     Int
+  order         Int      @default(0)
+  title         String
+  difficulty    String   @default("Easy")
+  description   String
+  inputDesc     String   @default("")
+  outputDesc    String   @default("")
+  sampleInput   String   @default("")
+  sampleOutput  String   @default("")
+  testCases     String   @default("[]")
+  timeLimit     Int      @default(5)      // 秒
+  memoryLimit   Int      @default(256)    // MB
+  sourceProblemId Int?   // 从题库哪个题目复制过来的（可选）
+
+  contest Contest @relation(fields: [contestId], references: [id], onDelete: Cascade)
+  submissions ContestSubmission[]
+}
+
+model ContestParticipant {
+  id        Int      @id @default(autoincrement())
+  contestId Int
+  userId    Int
+  joinedAt  DateTime @default(now())
+  score     Int      @default(0)
+  penalty   Int      @default(0)
+
+  contest Contest @relation(fields: [contestId], references: [id], onDelete: Cascade)
+
+  @@unique([contestId, userId])
+}
+
+model ContestSubmission {
+  id               Int      @id @default(autoincrement())
+  contestId        Int
+  userId           Int
+  contestProblemId Int
+  language         String   @default("cpp")
+  code             String
+  status           String
+  stdout           String?
+  stderr           String?
+  time             Int?
+  memory           Int?
+  createdAt        DateTime @default(now())
+
+  contest Contest @relation(fields: [contestId], references: [id], onDelete: Cascade)
+  problem ContestProblem @relation(fields: [contestProblemId], references: [id], onDelete: Cascade)
+
+  @@index([contestId])
+  @@index([userId])
+  @@index([contestId, userId])
+  @@index([contestProblemId])
+}
+
+model ContestAnnouncement {
+  id          Int      @id @default(autoincrement())
+  contestId   Int
+  title       String
+  content     String
+  createdBy   Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  contest     Contest  @relation(fields: [contestId], references: [id], onDelete: Cascade)
+
+  @@index([contestId])
+  @@index([createdAt])
+}
+
+// ── Training ──
+model Training {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String   @default("")
+  coverImage  String   @default("")
+  authorId    Int
+  tags        String   @default("[]")
+  difficulty  String   @default("入门")
+  pinyin      String   @default("")
+  isPublic    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  problems     TrainingProblem[]
+  submissions  TrainingSubmission[]
+}
+
+// 训练题目：独立存储，不引用 Problem
+model TrainingProblem {
+  id            Int      @id @default(autoincrement())
+  trainingId    Int
+  order         Int      @default(0)
+  title         String
+  difficulty    String   @default("Easy")
+  description   String
+  inputDesc     String   @default("")
+  outputDesc    String   @default("")
+  sampleInput   String   @default("")
+  sampleOutput  String   @default("")
+  testCases     String   @default("[]")
+  timeLimit     Int      @default(5)      // 秒
+  memoryLimit   Int      @default(256)
+  sourceProblemId Int?
+
+  training Training @relation(fields: [trainingId], references: [id], onDelete: Cascade)
+  submissions TrainingSubmission[]
+}
+
+model TrainingSubmission {
+  id                Int      @id @default(autoincrement())
+  trainingId        Int
+  userId            Int
+  trainingProblemId Int
+  language          String   @default("cpp")
+  code              String
+  status            String
+  stdout            String?
+  stderr            String?
+  time              Int?
+  memory            Int?
+  createdAt         DateTime @default(now())
+
+  training Training @relation(fields: [trainingId], references: [id], onDelete: Cascade)
+  problem TrainingProblem @relation(fields: [trainingProblemId], references: [id], onDelete: Cascade)
+
+  @@index([trainingId])
+  @@index([userId])
+  @@index([trainingId, userId])
+  @@index([trainingProblemId])
+}
