@@ -8,7 +8,7 @@ export async function GET() {
   }
   return NextResponse.json({
     siteName: settings.siteName,
-    siteIcon: settings.siteIcon,
+    siteIcon: settings.siteIcon || "/logo.svg",
     siteSubtitle: settings.siteSubtitle || "在线评测系统",
     footerText: settings.footerText,
     homepageAnnouncement: settings.homepageAnnouncement,

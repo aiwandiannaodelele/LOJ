@@ -5,7 +5,7 @@ export async function GET() {
   const settings = await prisma.settings.findFirst();
   return NextResponse.json({
     siteName: settings?.siteName || "LOJ",
-    siteIcon: settings?.siteIcon || "",
+    siteIcon: settings?.siteIcon || "/logo.svg",
     allowRegistration: settings?.allowRegistration ?? true,
     trainingEnabled: settings?.trainingEnabled ?? true,
     contestEnabled: settings?.contestEnabled ?? true,
