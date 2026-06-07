@@ -67,6 +67,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         // 登录成功，清除失败计数
         clearLoginAttempts(email, ip);
 
+        console.log("[Auth] Login OK:", user.email, "isAdmin:", user.userGroup?.isAdmin ?? false);
+
         return {
           id: user.id.toString(),
           name: user.name,
@@ -104,7 +106,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               token.isAdmin = dbUser.userGroup?.isAdmin ?? false;
               roleCache.set(userId, { role: dbUser.role, userGroupId: dbUser.userGroupId, isAdmin: dbUser.userGroup?.isAdmin ?? false, updatedAt: now });
             }
-          } catch { /* DB 不可用时保持现有 token 值 */ }
+            console.log("[Auth] JWT refresh OK for user", userId, "isAdmin:", token.isAdmin);
+          } catch (e) {
+            console.error("[Auth] JWT refresh DB error:", e instanceof Error ? e.message : e);
+          }
         } else {
           token.role = cached.role;
           token.userGroupId = cached.userGroupId.toString();
