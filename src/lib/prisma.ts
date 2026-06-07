@@ -3,6 +3,14 @@ import { PrismaD1 } from "@prisma/adapter-d1";
 import { PrismaLibSql } from "@prisma/adapter-libsql";
 
 function createPrismaClient() {
+  const dbUrl = process.env.DATABASE_URL || "";
+
+  // Supabase / PostgreSQL
+  if (dbUrl.startsWith("postgres")) {
+    const { PrismaPg } = require("@prisma/adapter-pg");
+    return new PrismaClient({ adapter: new PrismaPg({ connectionString: dbUrl }) });
+  }
+
   // Turso / libSQL（Vercel / EdgeOne Pages）
   if (process.env.TURSO_DATABASE_URL) {
     return new PrismaClient({

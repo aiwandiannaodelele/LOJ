@@ -5,6 +5,7 @@ generator client {
 
 datasource db {
   provider = "sqlite"
+  // 使用 Supabase 时改为 "postgresql"
 }
 
 model UserGroup {
