@@ -75,6 +75,15 @@ export default function OAuthProvidersAdminPage() {
 
   if (loading) return <div className="flex items-center justify-center h-[60vh]"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>;
 
+  // 确保内置提供者始终出现在列表中（可编辑）
+  const allProviders = [...providers];
+  const builtins = ["github", "google"];
+  for (const id of builtins) {
+    if (!allProviders.find(p => p.id === id)) {
+      allProviders.push({ id, name: id === "github" ? "GitHub" : "Google", icon: "", clientId: "", clientSecret: "", enabled: true });
+    }
+  }
+
   return (
     <div className="mx-auto max-w-4xl px-4 sm:px-6 py-6 space-y-6">
       <div className="flex items-center gap-3">
@@ -85,46 +94,24 @@ export default function OAuthProvidersAdminPage() {
         <h1 className="text-xl font-bold tracking-tight">OAuth 提供者管理</h1>
       </div>
 
-      {/* Built-in status */}
-      <Card>
-        <CardHeader><CardTitle className="text-base">内置提供者（通过环境变量配置）</CardTitle></CardHeader>
-        <CardContent className="space-y-3 text-sm">
-          <div className="flex items-center justify-between py-1">
-            <span className="font-medium">GitHub</span>
-            <span className={`text-xs px-2 py-0.5 rounded ${process.env.NEXT_PUBLIC_GITHUB_ID ? "bg-emerald-500/10 text-emerald-500" : "bg-muted text-muted-foreground"}`}>
-              环境变量 {process.env.NEXT_PUBLIC_GITHUB_ID ? "已配置" : "未配置"}
-            </span>
-          </div>
-          <div className="flex items-center justify-between py-1">
-            <span className="font-medium">Google</span>
-            <span className={`text-xs px-2 py-0.5 rounded ${process.env.NEXT_PUBLIC_GOOGLE_ID ? "bg-emerald-500/10 text-emerald-500" : "bg-muted text-muted-foreground"}`}>
-              环境变量 {process.env.NEXT_PUBLIC_GOOGLE_ID ? "已配置" : "未配置"}
-            </span>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Custom providers */}
       <Card>
         <CardHeader className="flex-row items-center justify-between">
-          <CardTitle className="text-base">自定义提供者（{providers.length}）</CardTitle>
+          <CardTitle className="text-base">提供者列表（{allProviders.length}）</CardTitle>
           {!editingId && <Button size="sm" onClick={() => { setForm({ id: "", name: "", icon: "", clientId: "", clientSecret: "", enabled: true }); setEditingId("__new__"); }}><Plus className="h-3.5 w-3.5 mr-1" />添加</Button>}
         </CardHeader>
         <CardContent className="space-y-3">
-          {providers.map(p => (
+          {allProviders.map(p => (
             <div key={p.id} className="flex items-center gap-3 rounded-lg border p-3">
               <div className="flex h-8 w-8 items-center justify-center rounded bg-muted">
                 {p.icon ? (p.icon.startsWith("<svg") ? <span className="h-5 w-5 [&>svg]:w-full [&>svg]:h-full" dangerouslySetInnerHTML={{ __html: p.icon }} /> : <img src={p.icon} className="h-5 w-5 rounded" />) : <Shield className="h-4 w-4 text-muted-foreground" />}
               </div>
-              <div className="flex-1"><div className="text-sm font-medium">{p.name}</div><div className="text-xs text-muted-foreground">{p.id}</div></div>
+              <div className="flex-1"><div className="text-sm font-medium">{p.name}</div><div className="text-xs text-muted-foreground">{p.id}{builtins.includes(p.id) ? " · 内置" : ""}</div></div>
               <span className={`text-[10px] px-1.5 py-0.5 rounded ${p.enabled ? "bg-emerald-500/10 text-emerald-500" : "bg-muted text-muted-foreground"}`}>{p.enabled ? "启用" : "禁用"}</span>
+              <span className={`text-[10px] px-1.5 py-0.5 rounded ${p.clientId ? "bg-emerald-500/10 text-emerald-500" : "bg-muted text-muted-foreground"}`}>{p.clientId ? "已配置" : "未配置"}</span>
               <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEdit(p)}><Save className="h-3.5 w-3.5" /></Button>
-              <Button variant="ghost" size="icon" className="h-7 w-7 text-red-500" onClick={() => handleDelete(p.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
+              {!builtins.includes(p.id) && <Button variant="ghost" size="icon" className="h-7 w-7 text-red-500" onClick={() => handleDelete(p.id)}><Trash2 className="h-3.5 w-3.5" /></Button>}
             </div>
           ))}
-          {providers.length === 0 && !editingId && (
-            <p className="text-sm text-muted-foreground text-center py-4">暂无自定义提供者</p>
-          )}
         </CardContent>
       </Card>
 
