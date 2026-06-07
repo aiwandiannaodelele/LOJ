@@ -25,6 +25,8 @@ export async function GET() {
       signature: true,
       githubUsername: true,
       avatar: true,
+      image: true,
+      oauthAccounts: true,
       websiteUrl: true,
     },
   });

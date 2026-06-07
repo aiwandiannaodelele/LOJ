@@ -43,8 +43,10 @@ const MIGRATION_SQL = [
     "bio" TEXT NOT NULL DEFAULT '',
     "signature" TEXT NOT NULL DEFAULT '',
     "avatar" TEXT NOT NULL DEFAULT '',
+    "image" TEXT NOT NULL DEFAULT '',
     "githubUsername" TEXT NOT NULL DEFAULT '',
     "websiteUrl" TEXT NOT NULL DEFAULT '',
+    "oauthAccounts" TEXT NOT NULL DEFAULT '[]',
     "createdAt" TEXT NOT NULL DEFAULT (datetime('now')),
     "updatedAt" TEXT NOT NULL DEFAULT (datetime('now')),
     FOREIGN KEY ("userGroupId") REFERENCES "UserGroup"("id")
@@ -180,6 +182,7 @@ const MIGRATION_SQL = [
     "homepageSlogan" TEXT NOT NULL DEFAULT '',
     "homepageShowSubmissions" INTEGER NOT NULL DEFAULT 0,
     "homepageShowDiscussions" INTEGER NOT NULL DEFAULT 0,
+    "oauthProviders" TEXT NOT NULL DEFAULT '[]',
     "updatedAt" TEXT NOT NULL DEFAULT (datetime('now'))
   )`,
 

@@ -51,6 +51,8 @@ interface UserProfile {
   signature: string;
   avatar: string;
   githubUsername: string;
+  oauthAccounts: string;
+  image: string;
   websiteUrl: string;
 }
 
@@ -70,18 +72,8 @@ export default function ProfilePage() {
     signature: "",
     avatar: "",
     githubUsername: "",
-    websiteUrl: "",
-  });
-  const [profileLoaded, setProfileLoaded] = useState(false);
-  const [editing, setEditing] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [saveError, setSaveError] = useState("");
-  const [editForm, setEditForm] = useState({
-    name: "",
-    bio: "",
-    signature: "",
-    avatar: "",
-    githubUsername: "",
+    image: "",
+    oauthAccounts: "[]",
     websiteUrl: "",
   });
   const [uploading, setUploading] = useState(false);
@@ -425,47 +417,40 @@ export default function ProfilePage() {
               <CardHeader>
                 <CardTitle className="text-base flex items-center gap-2">
                   <Link2 className="h-4 w-4 text-muted-foreground" />
-                  社交链接
+                  账号关联
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {profile.githubUsername ? (
-                  <a href={`https://github.com/${profile.githubUsername}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 text-sm text-foreground hover:text-primary transition-colors group">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted group-hover:bg-primary/10 transition-colors">
-                      <GitHubIcon className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="font-medium">GitHub</div>
-                      <div className="text-xs text-muted-foreground truncate">@{profile.githubUsername}</div>
-                    </div>
-                  </a>
-                ) : (
-                  <div className="flex items-center gap-2.5 text-sm text-muted-foreground">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted">
-                      <GitHubIcon className="h-4 w-4" />
-                    </div>
-                    <span>未设置 GitHub</span>
-                  </div>
-                )}
-
-                {profile.websiteUrl ? (
-                  <a href={profile.websiteUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 text-sm text-foreground hover:text-primary transition-colors group">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted group-hover:bg-primary/10 transition-colors">
-                      <Globe className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="font-medium">个人网站</div>
-                      <div className="text-xs text-muted-foreground truncate">{profile.websiteUrl.replace(/^https?:\/\//, "")}</div>
-                    </div>
-                  </a>
-                ) : (
-                  <div className="flex items-center gap-2.5 text-sm text-muted-foreground">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted">
-                      <Globe className="h-4 w-4" />
-                    </div>
-                    <span>未设置个人网站</span>
-                  </div>
-                )}
+                {(() => {
+                  const linked = (() => { try { return JSON.parse(profile.oauthAccounts || "[]"); } catch { return []; } })();
+                  return (
+                    <>
+                      {linked.length > 0 && linked.map((a: any) => (
+                        <div key={a.provider} className="flex items-center gap-2.5 text-sm">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted">
+                            {a.avatar ? <img src={a.avatar} alt="" className="h-5 w-5 rounded" /> : <GitHubIcon className="h-4 w-4 text-muted-foreground" />}
+                          </div>
+                          <div className="min-w-0"><div className="font-medium">{a.provider}</div><div className="text-xs text-muted-foreground truncate">{a.username || a.providerAccountId}</div></div>
+                          <div className="ml-auto text-[10px] bg-emerald-500/10 text-emerald-500 px-1.5 py-0.5 rounded">已关联</div>
+                        </div>
+                      ))}
+                      {profile.githubUsername ? (
+                        <a href={`https://github.com/${profile.githubUsername}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 text-sm text-foreground hover:text-primary transition-colors group">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted group-hover:bg-primary/10 transition-colors">
+                            <GitHubIcon className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
+                          </div>
+                          <div className="min-w-0">
+                            <div className="font-medium">GitHub</div>
+                            <div className="text-xs text-muted-foreground truncate">@{profile.githubUsername}</div>
+                          </div>
+                          <span className="ml-auto text-[10px] bg-amber-500/10 text-amber-500 px-1.5 py-0.5 rounded">旧版</span>
+                        </a>
+                      ) : linked.length === 0 ? (
+                        <p className="text-sm text-muted-foreground text-center">登录时选择第三方账号即可自动关联</p>
+                      ) : null}
+                    </>
+                  );
+                })()}
               </CardContent>
             </Card>
           </div>

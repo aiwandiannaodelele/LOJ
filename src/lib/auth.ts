@@ -88,11 +88,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async signIn({ user, account }) {
       if (account?.provider === "credentials") return true;
       if (account?.providerAccountId && user.email) {
-        const existing = await prisma.user.findUnique({ where: { email: user.email } });
+        const email = user.email.toLowerCase();
+        let existing = await prisma.user.findUnique({ where: { email } });
         if (!existing) {
-          await prisma.user.create({
-            data: { name: user.name || user.email.split("@")[0], email: user.email, role: "user", image: user.image || "" },
+          existing = await prisma.user.create({
+            data: { name: user.name || email.split("@")[0], email, role: "user", image: user.image || "" },
           });
+        }
+        // 保存 OAuth 关联信息
+        const linked = (() => { try { return JSON.parse(existing.oauthAccounts || "[]"); } catch { return []; } })();
+        if (!linked.find((a: any) => a.provider === account.provider && a.providerAccountId === account.providerAccountId)) {
+          linked.push({ provider: account.provider, providerAccountId: account.providerAccountId, username: user.name, avatar: user.image });
+          await prisma.user.update({ where: { id: existing.id }, data: { oauthAccounts: JSON.stringify(linked) } });
         }
       }
       return true;
