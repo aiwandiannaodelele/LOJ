@@ -218,10 +218,8 @@ const WEAK_SECRETS = [
 export function validateAuthSecret(): void {
   if (process.env.NEXT_PHASE) return;
   if (!process.env.NEXTAUTH_SECRET) {
-    // 基于数据库 URL 生成确定性密钥（Vercel 冷启动不变化）
-    const crypto = require("crypto") as typeof import("crypto");
     const seed = process.env.TURSO_DATABASE_URL || process.env.DATABASE_URL || "loj-seed";
-    process.env.NEXTAUTH_SECRET = crypto.createHash("sha256").update(seed).digest("base64");
+    process.env.NEXTAUTH_SECRET = btoa(seed);
     console.warn("[Auth] NEXTAUTH_SECRET derived from database URL.");
   }
   if (process.env.NODE_ENV === "production" && WEAK_SECRETS.includes(process.env.NEXTAUTH_SECRET)) {

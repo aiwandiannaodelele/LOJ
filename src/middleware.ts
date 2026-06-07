@@ -2,16 +2,11 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { decode } from "@auth/core/jwt";
 
-function ensureAuthSecret() {
-  if (!process.env.NEXTAUTH_SECRET) {
-    const seed = process.env.TURSO_DATABASE_URL || process.env.DATABASE_URL || "loj-seed";
-    const crypto = require("crypto") as typeof import("crypto");
-    process.env.NEXTAUTH_SECRET = crypto.createHash("sha256").update(seed).digest("base64");
-  }
+function getAuthSecret() {
+  return btoa(process.env.TURSO_DATABASE_URL || process.env.DATABASE_URL || "loj-seed");
 }
 
 async function getSessionFromCookie(request: NextRequest) {
-  ensureAuthSecret();
   const sessionCookie =
     request.cookies.get("authjs.session-token") ||
     request.cookies.get("__Secure-authjs.session-token");
@@ -26,7 +21,7 @@ async function getSessionFromCookie(request: NextRequest) {
   try {
     const payload = await decode({
       token: sessionCookie.value,
-      secret: process.env.NEXTAUTH_SECRET || "",
+      secret: getAuthSecret(),
       salt,
     });
     return payload as {
