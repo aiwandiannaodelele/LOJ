@@ -3,35 +3,42 @@ import { PrismaD1 } from "@prisma/adapter-d1";
 import { PrismaLibSql } from "@prisma/adapter-libsql";
 
 function createPrismaClient() {
-  const dbUrl = process.env.DATABASE_URL || "";
+  try {
+    const dbUrl = process.env.DATABASE_URL || "";
 
-  // Supabase / PostgreSQL
-  if (dbUrl.startsWith("postgres")) {
-    const { PrismaPg } = require("@prisma/adapter-pg");
-    return new PrismaClient({ adapter: new PrismaPg({ connectionString: dbUrl }) });
-  }
+    if (dbUrl.startsWith("postgres")) {
+      const { PrismaPg } = require("@prisma/adapter-pg");
+      return new PrismaClient({ adapter: new PrismaPg({ connectionString: dbUrl }) });
+    }
 
-  // Turso / libSQL（Vercel / EdgeOne Pages）
-  if (process.env.TURSO_DATABASE_URL) {
-    return new PrismaClient({
-      adapter: new PrismaLibSql({
-        url: process.env.TURSO_DATABASE_URL,
-        authToken: process.env.TURSO_AUTH_TOKEN,
-      }),
+    if (process.env.TURSO_DATABASE_URL) {
+      return new PrismaClient({
+        adapter: new PrismaLibSql({
+          url: process.env.TURSO_DATABASE_URL,
+          authToken: process.env.TURSO_AUTH_TOKEN,
+        }),
+      });
+    }
+
+    const d1 = (globalThis as any).DB;
+    if (d1 && typeof d1.prepare === "function") {
+      return new PrismaClient({ adapter: new PrismaD1(d1) });
+    }
+
+    const { PrismaBetterSqlite3 } = require("@prisma/adapter-better-sqlite3");
+    const path = require("path");
+    const dbPath = path.join(process.cwd(), "dev.db");
+    return new PrismaClient({ adapter: new PrismaBetterSqlite3({ url: "file:" + dbPath }) });
+  } catch (e) {
+    console.error("[Prisma] init failed:", e);
+    // 返回代理对象，避免模块导入时崩溃，每个查询都会抛出明确错误
+    return new Proxy({} as PrismaClient, {
+      get() {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return () => { throw new Error(`Database not available: ${e instanceof Error ? e.message : e}`); } as any;
+      },
     });
   }
-
-  // Cloudflare D1
-  const d1 = (globalThis as any).DB;
-  if (d1 && typeof d1.prepare === "function") {
-    return new PrismaClient({ adapter: new PrismaD1(d1) });
-  }
-
-  // 本地开发
-  const { PrismaBetterSqlite3 } = require("@prisma/adapter-better-sqlite3");
-  const path = require("path");
-  const dbPath = path.join(process.cwd(), "dev.db");
-  return new PrismaClient({ adapter: new PrismaBetterSqlite3({ url: "file:" + dbPath }) });
 }
 
 const globalForPrisma = globalThis as unknown as {
