@@ -218,8 +218,10 @@ const WEAK_SECRETS = [
 export function validateAuthSecret(): void {
   if (process.env.NEXT_PHASE) return;
   if (!process.env.NEXTAUTH_SECRET) {
-    const seed = process.env.TURSO_DATABASE_URL || process.env.DATABASE_URL || "loj-seed";
-    process.env.NEXTAUTH_SECRET = btoa(seed);
+    const seed = process.env.TURSO_DATABASE_URL || process.env.DATABASE_URL || "loj-secret-key";
+    let h = 0;
+    for (let i = 0; i < seed.length; i++) { h = ((h << 5) - h) + seed.charCodeAt(i); h |= 0; }
+    process.env.NEXTAUTH_SECRET = "loj-" + Math.abs(h).toString(36);
     console.warn("[Auth] NEXTAUTH_SECRET derived from database URL.");
   }
   if (process.env.NODE_ENV === "production" && WEAK_SECRETS.includes(process.env.NEXTAUTH_SECRET)) {
