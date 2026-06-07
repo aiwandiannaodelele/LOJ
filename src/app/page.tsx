@@ -86,7 +86,10 @@ export default function HomePage() {
   const [heroLoaded, setHeroLoaded] = useState(false);
 
   useEffect(() => {
-    fetch("/api/init").then((r) => r.json()).then((data) => { if (data.needsInit) window.location.href = "/init"; });
+    // 检查是否需要初始化
+    fetch("/api/init").then((r) => r.json())
+      .then((data) => { if (data.needsInit) window.location.href = "/init"; })
+      .catch(() => window.location.href = "/init");
 
     Promise.all([
       fetch("/api/problems").then((r) => r.json()),
@@ -109,10 +112,11 @@ export default function HomePage() {
       setShowDiscussions(setd.homepageShowDiscussions ?? false);
       if (setd.homepageShowSubmissions) setSubmissions(rsd.submissions || []);
       if (setd.homepageShowDiscussions) {
-        fetch("/api/discussions?pageSize=8").then((r) => r.json()).then((d) => setDiscussions(d.discussions || []));
+        fetch("/api/discussions?pageSize=8").then((r) => r.json()).then((d) => setDiscussions(d.discussions || [])).catch(() => {});
       }
-      setHeroLoaded(true);
-    });
+    })
+    .catch(() => {})
+    .finally(() => setHeroLoaded(true));
   }, []);
 
   return (
