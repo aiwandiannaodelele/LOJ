@@ -20,6 +20,7 @@ import {
   Send,
   Shield,
   Layout,
+  FileCode,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
@@ -112,11 +113,19 @@ const adminCards = [
   },
   {
     title: "自定义页面",
-    desc: "创建 HTML 页面、嵌入 URL",
+    desc: "创建独立自定义页面",
     href: "/admin/custom-pages",
-    icon: FileText,
-    color: "text-blue-500",
-    bg: "bg-blue-500/10",
+    icon: FileCode,
+    color: "text-teal-500",
+    bg: "bg-teal-500/10",
+  },
+  {
+    title: "OAuth 登录",
+    desc: "管理第三方登录提供者",
+    href: "/admin/oauth-providers",
+    icon: Shield,
+    color: "text-rose-500",
+    bg: "bg-rose-500/10",
   },
 ];
 
