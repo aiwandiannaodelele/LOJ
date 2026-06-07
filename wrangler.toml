@@ -6,8 +6,3 @@ pages_build_output_dir = ".open-next"
 
 [vars]
 NEXTAUTH_SECRET = "gthjYqbOXjqIFp9GI/lcRdIfnXS6FsWQTsqQSfmuum4="
-
-[[d1_databases]]
-binding = "DB"
-database_name = "loj-db"
-database_id = "" # 运行 `npx wrangler d1 create loj-db` 后填写
