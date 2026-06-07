@@ -10,10 +10,20 @@ export async function GET() {
   try {
     const adminCount = await prisma.user.count({ where: { userGroup: { isAdmin: true } } });
     return NextResponse.json({ needsInit: adminCount === 0 });
-  } catch {
-    // 数据库为空（新 Turso），自动建表后返回需要初始化
-    try { await autoMigrate(prisma); } catch {}
-    return NextResponse.json({ needsInit: true });
+  } catch (e) {
+    // 尝试建表
+    const migrateOk = await autoMigrate(prisma).then(() => true).catch(() => false);
+    // 返回详细状态
+    return NextResponse.json({
+      needsInit: true,
+      dbStatus: {
+        hasTurso: !!process.env.TURSO_DATABASE_URL,
+        hasSupabase: !!(process.env.DATABASE_URL && process.env.DATABASE_URL.startsWith("postgres")),
+        hasD1: !!(globalThis as any).DB,
+        migrateOk,
+        error: e instanceof Error ? e.message : String(e),
+      },
+    });
   }
 }
 

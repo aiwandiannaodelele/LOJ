@@ -41,12 +41,19 @@ export default function InitPage() {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  const [dbStatus, setDbStatus] = useState<any>(null);
+
   useEffect(() => {
     fetch("/api/init")
       .then((r) => r.json())
       .then((data) => {
         if (!data.needsInit) {
           router.replace("/");
+          return;
+        }
+        if (data.dbStatus?.error) {
+          setDbError(true);
+          setDbStatus(data.dbStatus);
           return;
         }
         setNeedsInit(true);
@@ -154,6 +161,13 @@ export default function InitPage() {
             NEXTAUTH_SECRET 已自动生成，无需手动配置。
             设置好数据库环境变量后刷新此页面。
           </p>
+          {dbStatus && (
+            <div className="text-xs text-left font-mono text-muted-foreground/70 bg-muted p-2 rounded-md">
+              {Object.entries(dbStatus).map(([k, v]) => (
+                <div key={k}>{k}: {String(v)}</div>
+              ))}
+            </div>
+          )}
           <Button variant="outline" onClick={() => window.location.reload()}>
             刷新重试
           </Button>
