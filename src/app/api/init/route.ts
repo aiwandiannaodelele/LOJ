@@ -76,14 +76,6 @@ export async function POST(request: Request) {
         password?: string;
       };
 
-      const body = (await request.json()) as {
-        mode: "existing" | "new";
-        userId?: number;
-        name?: string;
-        email?: string;
-        password?: string;
-      };
-
       let adminId: number;
 
       if (body.mode === "existing" && body.userId) {
