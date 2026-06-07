@@ -5,12 +5,15 @@ import type { PrismaClient } from "@/generated/prisma/client";
  * 使用 Prisma 的 $executeRawUnsafe 逐条执行 CREATE TABLE。
  */
 export async function autoMigrate(prisma: PrismaClient): Promise<void> {
-  // 检测是否有表
   try {
     const result = await prisma.$queryRawUnsafe<[{ count: number }]>(
       `SELECT count(*) as count FROM sqlite_master WHERE type='table' AND name='User'`
     );
-    if (result[0]?.count > 0) return; // 已有表
+    if (result[0]?.count > 0) {
+      // 表已存在，执行增量迁移（添加新列）
+      await runIncrementalMigration(prisma);
+      return;
+    }
   } catch {
     // 数据库为空，继续建表
   }
@@ -19,6 +22,18 @@ export async function autoMigrate(prisma: PrismaClient): Promise<void> {
     await prisma.$executeRawUnsafe(sql);
   }
 }
+
+async function runIncrementalMigration(prisma: PrismaClient) {
+  for (const sql of ALTER_TABLE_SQL) {
+    try { await prisma.$executeRawUnsafe(sql); } catch {}
+  }
+}
+
+const ALTER_TABLE_SQL = [
+  `ALTER TABLE "User" ADD COLUMN "image" TEXT NOT NULL DEFAULT ''`,
+  `ALTER TABLE "User" ADD COLUMN "oauthAccounts" TEXT NOT NULL DEFAULT '[]'`,
+  `ALTER TABLE "Settings" ADD COLUMN "oauthProviders" TEXT NOT NULL DEFAULT '[]'`,
+];
 
 // Prisma 7 + SQLite 生成的 DDL
 const MIGRATION_SQL = [
