@@ -6,6 +6,23 @@ import { validatePasswordStrength, containsHtml, MAX_NAME_LENGTH } from "@/lib/s
 import { seedDefaultData } from "@/lib/seed-data";
 import { autoMigrate } from "@/lib/migrate";
 
+// 确保管理员组和默认用户组存在，返回管理员组
+async function ensureGroups(tx: any) {
+  let adminGroup = await tx.userGroup.findFirst({ where: { isAdmin: true } });
+  if (!adminGroup) {
+    adminGroup = await tx.userGroup.create({
+      data: { name: "管理员", isAdmin: true, color: "#ef4444", priority: 100 },
+    });
+  }
+  const defaultGroup = await tx.userGroup.findFirst({ where: { isDefault: true } });
+  if (!defaultGroup) {
+    await tx.userGroup.create({
+      data: { name: "默认用户", isDefault: true, color: "#64748b", priority: 0 },
+    });
+  }
+  return adminGroup;
+}
+
 export async function GET() {
   try {
     const adminCount = await prisma.user.count({ where: { userGroup: { isAdmin: true } } });
@@ -48,6 +65,17 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: "系统已初始化" }, { status: 400 });
       }
 
+      // 确保管理员组存在
+      const adminGroup = await ensureGroups(tx);
+
+      const body = (await request.json()) as {
+        mode: "existing" | "new";
+        userId?: number;
+        name?: string;
+        email?: string;
+        password?: string;
+      };
+
       const body = (await request.json()) as {
         mode: "existing" | "new";
         userId?: number;
@@ -62,13 +90,6 @@ export async function POST(request: Request) {
         const user = await tx.user.findUnique({ where: { id: body.userId } });
         if (!user) {
           return NextResponse.json({ error: "用户不存在" }, { status: 400 });
-        }
-        const adminGroup = await tx.userGroup.findFirst({ where: { isAdmin: true } });
-        if (!adminGroup) {
-          return NextResponse.json({ error: "未找到管理员用户组" }, { status: 500 });
-        }
-        if (user.userGroupId === adminGroup.id) {
-          return NextResponse.json({ error: "该用户已是管理员" }, { status: 400 });
         }
         await tx.user.update({
           where: { id: body.userId },
@@ -95,10 +116,6 @@ export async function POST(request: Request) {
         });
         if (existing) {
           return NextResponse.json({ error: "邮箱已注册" }, { status: 400 });
-        }
-        const adminGroup = await tx.userGroup.findFirst({ where: { isAdmin: true } });
-        if (!adminGroup) {
-          return NextResponse.json({ error: "未找到管理员用户组" }, { status: 500 });
         }
         const hashed = await bcrypt.hash(body.password, 10);
         const created = await tx.user.create({
