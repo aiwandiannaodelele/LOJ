@@ -8,15 +8,15 @@ import { autoMigrate } from "@/lib/migrate";
 
 // 确保管理员组和默认用户组存在，返回管理员组
 async function ensureGroups(prisma: any) {
-  let adminGroup = await tx.userGroup.findFirst({ where: { isAdmin: true } });
+  let adminGroup = await prisma.userGroup.findFirst({ where: { isAdmin: true } });
   if (!adminGroup) {
-    adminGroup = await tx.userGroup.create({
+    adminGroup = await prisma.userGroup.create({
       data: { name: "管理员", isAdmin: true, color: "#ef4444", priority: 100 },
     });
   }
-  const defaultGroup = await tx.userGroup.findFirst({ where: { isDefault: true } });
+  const defaultGroup = await prisma.userGroup.findFirst({ where: { isDefault: true } });
   if (!defaultGroup) {
-    await tx.userGroup.create({
+    await prisma.userGroup.create({
       data: { name: "默认用户", isDefault: true, color: "#64748b", priority: 0 },
     });
   }
