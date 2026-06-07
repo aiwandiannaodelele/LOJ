@@ -29,6 +29,14 @@ interface FileItem {
 
 type Unit = "GB" | "MB" | "KB";
 
+function formatSize(bytes: number): string {
+  if (bytes === 0) return "0 B";
+  const k = 1024;
+  if (bytes >= k ** 3) return parseFloat((bytes / k ** 3).toFixed(2)) + " GB";
+  if (bytes >= k ** 2) return parseFloat((bytes / k ** 2).toFixed(2)) + " MB";
+  return parseFloat((bytes / k).toFixed(1)) + " KB";
+}
+
 function formatByUnit(bytes: number, unit: Unit): string {
   if (bytes === 0) return "0 " + unit;
   const k = 1024;
@@ -118,17 +126,21 @@ export default function MyFilesPage() {
   }, [status, router, fetchFiles]);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
     setUploading(true); setError("");
-    const fd = new FormData();
-    fd.append("file", file); fd.append("path", currentPath);
-    try {
-      const res = await fetch("/api/files", { method: "POST", body: fd });
-      const data = await res.json();
-      if (!res.ok) setError(data.error || "上传失败"); else fetchFiles();
-    } catch { setError("上传失败"); }
-    finally { setUploading(false); e.target.value = ""; }
+    for (const file of files) {
+      try {
+        const fd = new FormData();
+        fd.append("file", file); fd.append("path", currentPath);
+        const res = await fetch("/api/files", { method: "POST", body: fd });
+        const data = await res.json();
+        if (!res.ok) setError(data.error || "上传失败");
+      } catch { setError("上传失败"); }
+    }
+    fetchFiles();
+    setUploading(false);
+    e.target.value = "";
   };
 
   const handleCreateFolder = async () => {
@@ -190,7 +202,17 @@ export default function MyFilesPage() {
     setSelectedIds(new Set());
   };
 
-  const handleDownload = (item: FileItem) => { if (item.url) window.open(item.url, "_blank"); };
+  const handleDownload = async (item: FileItem) => {
+    if (!item.url) return;
+    try {
+      const res = await fetch(item.url);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = item.name; a.click();
+      URL.revokeObjectURL(url);
+    } catch { window.open(item.url, "_blank"); }
+  };
 
   const toggleSelect = (id: number) => {
     setSelectedIds((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
@@ -232,7 +254,7 @@ export default function MyFilesPage() {
           </div>
           <div>
             <h1 className="text-2xl font-bold tracking-tight">我的文件</h1>
-            <p className="text-muted-foreground text-sm">{formatByUnit(usage, unit)} / {formatByUnit(limit, unit)}</p>
+            <p className="text-muted-foreground text-sm">{formatSize(usage)} / {formatSize(limit)}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -290,7 +312,7 @@ export default function MyFilesPage() {
           <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-md border bg-background px-3 py-2 text-sm hover:bg-accent transition-colors">
             <Upload className="h-4 w-4" />
             <span>{uploading ? "上传中..." : "上传"}</span>
-            <input type="file" className="hidden" onChange={handleUpload} disabled={uploading} />
+            <input type="file" multiple className="hidden" onChange={handleUpload} disabled={uploading} />
           </label>
           <Button variant="outline" size="sm" onClick={() => setCreatingFolder(!creatingFolder)} className="gap-1.5">
             <FolderPlus className="h-4 w-4" />新建文件夹
@@ -339,9 +361,9 @@ export default function MyFilesPage() {
                   ) : (
                     <div className="text-sm font-medium truncate w-full">{item.name}</div>
                   )}
-                  <div className="text-[10px] text-muted-foreground">{isFolder ? "文件夹" : formatByUnit(item.size, unit)}</div>
+                  <div className="text-[10px] text-muted-foreground">{isFolder ? "文件夹" : formatSize(item.size)}</div>
                 </div>
-                <div className="absolute top-1 right-1 flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="absolute top-1 right-1 flex items-center gap-0.5">
                   {!isRenaming && (
                     <div className="flex items-center gap-0.5" onClick={(e) => e.stopPropagation()}>
                       {!isFolder && item.url && <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleDownload(item)}><Download className="h-3 w-3" /></Button>}
@@ -375,7 +397,7 @@ export default function MyFilesPage() {
                       <button type="button" onClick={(e) => { e.stopPropagation(); isFolder ? enterFolder(item.name) : handleDownload(item); }} className="text-sm font-medium truncate hover:text-primary transition-colors text-left">{item.name}</button>
                     )}
                   </div>
-                  <div className="hidden sm:block text-xs text-muted-foreground w-20 text-right">{isFolder ? "—" : formatByUnit(item.size, unit)}</div>
+                  <div className="hidden sm:block text-xs text-muted-foreground w-20 text-right">{isFolder ? "—" : formatSize(item.size)}</div>
                   <div className="hidden md:block text-xs text-muted-foreground w-32 text-right">{formatDate(item.createdAt)}</div>
                   <div className="shrink-0 flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
                     {!isRenaming && (
