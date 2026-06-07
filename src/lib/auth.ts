@@ -5,6 +5,7 @@ import Google from "next-auth/providers/google";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { headers } from "next/headers";
+import { autoMigrate } from "@/lib/migrate";
 import {
   validateAuthSecret,
   checkLoginRateLimit,
@@ -37,6 +38,9 @@ async function loadOAuthCredentials() {
 }
 // 模块加载时异步读取（NextAuth 初始化在回调中才真正需要凭据）
 loadOAuthCredentials();
+
+// 每次冷启动自动执行增量迁移（加新列）
+autoMigrate(prisma).catch(() => {});
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
