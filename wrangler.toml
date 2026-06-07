@@ -3,6 +3,10 @@ name = "loj"
 compatibility_date = "2025-05-01"
 compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = ".open-next"
+
+[vars]
+NEXTAUTH_SECRET = "gthjYqbOXjqIFp9GI/lcRdIfnXS6FsWQTsqQSfmuum4="
+
 [[d1_databases]]
 binding = "DB"
 database_name = "loj-db"
