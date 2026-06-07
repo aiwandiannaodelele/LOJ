@@ -31,11 +31,10 @@ function createPrismaClient() {
     return new PrismaClient({ adapter: new PrismaBetterSqlite3({ url: "file:" + dbPath }) });
   } catch (e) {
     console.error("[Prisma] init failed:", e);
-    // 返回代理对象，避免模块导入时崩溃，每个查询都会抛出明确错误
+    const msg = `Database not available: ${e instanceof Error ? e.message : String(e)}`;
     return new Proxy({} as PrismaClient, {
-      get() {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return () => { throw new Error(`Database not available: ${e instanceof Error ? e.message : e}`); } as any;
+      get(_target, _prop) {
+        return () => { throw new Error(msg); };
       },
     });
   }
