@@ -86,6 +86,7 @@ export default function OAuthProvidersAdminPage() {
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };
+  const openEdit = (p?: OAuthProvider) => {
     if (p) { setForm(p); setEditingId(p.id); }
     else { setForm({ id: "", name: "", icon: "", clientId: "", clientSecret: "", enabled: true }); setEditingId(null); }
     setError("");
