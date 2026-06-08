@@ -16,7 +16,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [siteIcon, setSiteIcon] = useState("");
+  const [siteIcon, setSiteIcon] = useState<string | null>(null);
   const [siteName, setSiteName] = useState("LOJ");
   const [oauthProviders, setOauthProviders] = useState<string[]>([]);
 
@@ -61,7 +61,9 @@ export default function LoginPage() {
     <div className="flex items-center justify-center min-h-[calc(100dvh-3.5rem)] px-4">
       <div className="w-full max-w-sm space-y-6">
           <div className="flex flex-col items-center gap-3">
-            {siteIcon ? (
+            {siteIcon === null ? (
+              <div className="h-12 w-12 rounded-xl bg-muted animate-pulse" />
+            ) : siteIcon ? (
               <img src={siteIcon} alt="" className="h-12 w-12 rounded-xl object-contain" />
             ) : (
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground text-lg font-bold">

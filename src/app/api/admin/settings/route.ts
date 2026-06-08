@@ -58,6 +58,7 @@ export async function PUT(request: Request) {
     homepageSlogan?: string;
     homepageShowSubmissions?: boolean;
     homepageShowDiscussions?: boolean;
+    oauthProviders?: string;
   };
 
   // ===== 字段校验 =====
@@ -126,6 +127,7 @@ export async function PUT(request: Request) {
   if (body.homepageSlogan !== undefined) data.homepageSlogan = body.homepageSlogan;
   if (body.homepageShowSubmissions !== undefined) data.homepageShowSubmissions = body.homepageShowSubmissions;
   if (body.homepageShowDiscussions !== undefined) data.homepageShowDiscussions = body.homepageShowDiscussions;
+  if (body.oauthProviders !== undefined) data.oauthProviders = body.oauthProviders;
 
   let settings = await prisma.settings.findFirst();
   if (!settings) {
