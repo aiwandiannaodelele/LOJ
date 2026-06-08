@@ -10,9 +10,9 @@ export async function GET() {
 export async function POST(request: Request) {
   const session = await auth();
   if (!session?.user.isAdmin) return NextResponse.json({ error: "无权限" }, { status: 403 });
-  const { name, slug, description, icon, color, sortOrder, enabled } = await request.json();
+  const body = await request.json();
   const category = await prisma.discussionCategory.create({
-    data: { name, slug, description, icon, color, sortOrder, enabled },
+    data: { name: body.name, slug: body.slug, description: body.description || "", icon: body.icon || "MessageSquare", color: body.color || "#3b82f6", sortOrder: body.sortOrder || 0, enabled: body.enabled ?? true },
   });
   return NextResponse.json(category);
 }

@@ -6,11 +6,16 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   const session = await auth();
   if (!session?.user.isAdmin) return NextResponse.json({ error: "无权限" }, { status: 403 });
   const { id } = await params;
-  const { name, slug, description, icon, color, sortOrder, enabled } = await request.json();
-  const category = await prisma.discussionCategory.update({
-    where: { id: parseInt(id) },
-    data: { name, slug, description, icon, color, sortOrder, enabled },
-  });
+  const body = await request.json();
+  const data: Record<string, unknown> = {};
+  if (body.name !== undefined) data.name = body.name;
+  if (body.slug !== undefined) data.slug = body.slug;
+  if (body.description !== undefined) data.description = body.description;
+  if (body.icon !== undefined) data.icon = body.icon;
+  if (body.color !== undefined) data.color = body.color;
+  if (body.sortOrder !== undefined) data.sortOrder = body.sortOrder;
+  if (body.enabled !== undefined) data.enabled = body.enabled;
+  const category = await prisma.discussionCategory.update({ where: { id: parseInt(id) }, data: data as any });
   return NextResponse.json(category);
 }
 
