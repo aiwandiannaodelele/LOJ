@@ -12,7 +12,7 @@ export async function POST(request: Request) {
   if (!session?.user.isAdmin) return NextResponse.json({ error: "无权限" }, { status: 403 });
   const body = await request.json();
   const category = await prisma.discussionCategory.create({
-    data: { name: body.name, slug: body.slug, description: body.description || "", icon: body.icon || "MessageSquare", color: body.color || "#3b82f6", sortOrder: body.sortOrder || 0, enabled: body.enabled ?? true },
+    data: { name: body.name, slug: body.slug, description: body.description || "", icon: body.icon || "MessageSquare", color: body.color || "#3b82f6", sortOrder: body.sortOrder || 0, enabled: body.enabled ?? true } as any,
   });
   return NextResponse.json(category);
 }
