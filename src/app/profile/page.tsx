@@ -405,9 +405,9 @@ export default function ProfilePage() {
           {/* 左侧（2/3）：统计 + 简介 + 社交链接 */}
           <div className="md:col-span-2 space-y-6">
             <div className="grid grid-cols-3 gap-3">
-              <Card><CardContent className="pt-4 pb-4 flex flex-col items-center gap-1.5"><Send className="h-5 w-5 text-amber-500" /><span className="text-2xl font-bold">{stats.problemCount}</span><span className="text-xs text-muted-foreground">总提交</span></CardContent></Card>
-              <Card><CardContent className="pt-4 pb-4 flex flex-col items-center gap-1.5"><CheckCircle2 className="h-5 w-5 text-emerald-500" /><span className="text-2xl font-bold">{stats.passCount}</span><span className="text-xs text-muted-foreground">已通过</span></CardContent></Card>
-              <Card><CardContent className="pt-4 pb-4 flex flex-col items-center gap-1.5"><Trophy className="h-5 w-5 text-blue-500" /><span className="text-2xl font-bold">{stats.passRate}%</span><span className="text-xs text-muted-foreground">通过率</span></CardContent></Card>
+              <Card><CardContent className="pt-4 pb-4 flex flex-col items-center gap-1.5"><Send className="h-5 w-5 text-amber-500" /><span className="text-2xl font-bold">{stats.totalSubmissions}</span><span className="text-xs text-muted-foreground">总提交</span></CardContent></Card>
+              <Card><CardContent className="pt-4 pb-4 flex flex-col items-center gap-1.5"><CheckCircle2 className="h-5 w-5 text-emerald-500" /><span className="text-2xl font-bold">{stats.acCount}</span><span className="text-xs text-muted-foreground">已通过</span></CardContent></Card>
+              <Card><CardContent className="pt-4 pb-4 flex flex-col items-center gap-1.5"><Trophy className="h-5 w-5 text-blue-500" /><span className="text-2xl font-bold">{stats.totalSubmissions > 0 ? Math.round((stats.acCount / stats.totalSubmissions) * 100) : 0}%</span><span className="text-xs text-muted-foreground">通过率</span></CardContent></Card>
             </div>
             <Card>
               <CardHeader><CardTitle className="text-base flex items-center gap-2"><FileText className="h-4 w-4 text-muted-foreground" />个人简介</CardTitle></CardHeader>
@@ -454,39 +454,6 @@ export default function ProfilePage() {
             </Card>
           </div>
         </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="text-sm font-medium">{nameMap[a.provider] || a.provider}</div>
-                            <div className="text-xs text-muted-foreground truncate">{a.providerAccountId}{a.username && a.username !== a.providerAccountId ? ` (${a.username})` : ""}</div>
-                          </div>
-                          <span className="shrink-0 text-[10px] px-1.5 py-0.5 bg-emerald-500/10 text-emerald-500 rounded whitespace-nowrap">已关联</span>
-                        </div>
-                      ))}
-                      {providers.filter(id => !linked.find(a => a.provider === id)).map(id => (
-                        <div key={id} className="flex items-center gap-2.5 rounded-lg border p-2.5">
-                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-muted">
-                            {iconMap[id] || <Shield className="h-4 w-4 text-muted-foreground" />}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="text-sm font-medium">{nameMap[id] || id}</div>
-                            <div className="text-xs text-muted-foreground">未关联</div>
-                          </div>
-                          <Button variant="outline" size="sm" className="shrink-0 h-7 text-xs" onClick={() => signIn(id, { callbackUrl: "/profile" })}>
-                            <Link2 className="h-3 w-3 mr-1" />关联
-                          </Button>
-                        </div>
-                      ))}
-                    </>
-                  );
-                })()}
-              </CardContent>
-            </Card>
-
-            <Card className="border-red-500/30">
-              <CardContent className="pt-4">
-                <Button variant="destructive" className="w-full" onClick={() => { setDeleteConfirm(""); setDeleteError(""); setDeleteOpen(true); }}>注销账号</Button>
-              </CardContent>
-            </Card>
-          </div>
       )}
 
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
