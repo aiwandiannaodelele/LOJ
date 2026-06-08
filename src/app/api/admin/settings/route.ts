@@ -59,6 +59,12 @@ export async function PUT(request: Request) {
     homepageShowSubmissions?: boolean;
     homepageShowDiscussions?: boolean;
     oauthProviders?: string;
+    smtpHost?: string;
+    smtpPort?: number;
+    smtpUser?: string;
+    smtpPass?: string;
+    smtpFrom?: string;
+    smtpSecure?: boolean;
   };
 
   // ===== 字段校验 =====
@@ -128,6 +134,12 @@ export async function PUT(request: Request) {
   if (body.homepageShowSubmissions !== undefined) data.homepageShowSubmissions = body.homepageShowSubmissions;
   if (body.homepageShowDiscussions !== undefined) data.homepageShowDiscussions = body.homepageShowDiscussions;
   if (body.oauthProviders !== undefined) data.oauthProviders = body.oauthProviders;
+  if (body.smtpHost !== undefined) data.smtpHost = body.smtpHost;
+  if (body.smtpPort !== undefined) data.smtpPort = body.smtpPort;
+  if (body.smtpUser !== undefined) data.smtpUser = body.smtpUser;
+  if (body.smtpPass !== undefined) data.smtpPass = body.smtpPass;
+  if (body.smtpFrom !== undefined) data.smtpFrom = body.smtpFrom;
+  if (body.smtpSecure !== undefined) data.smtpSecure = body.smtpSecure;
 
   let settings = await prisma.settings.findFirst();
   if (!settings) {

@@ -33,6 +33,13 @@ const ALTER_TABLE_SQL = [
   `ALTER TABLE "User" ADD COLUMN "image" TEXT NOT NULL DEFAULT ''`,
   `ALTER TABLE "User" ADD COLUMN "oauthAccounts" TEXT NOT NULL DEFAULT '[]'`,
   `ALTER TABLE "Settings" ADD COLUMN "oauthProviders" TEXT NOT NULL DEFAULT '[]'`,
+  `ALTER TABLE "Settings" ADD COLUMN "smtpHost" TEXT NOT NULL DEFAULT ''`,
+  `ALTER TABLE "Settings" ADD COLUMN "smtpPort" INTEGER NOT NULL DEFAULT 587`,
+  `ALTER TABLE "Settings" ADD COLUMN "smtpUser" TEXT NOT NULL DEFAULT ''`,
+  `ALTER TABLE "Settings" ADD COLUMN "smtpPass" TEXT NOT NULL DEFAULT ''`,
+  `ALTER TABLE "Settings" ADD COLUMN "smtpFrom" TEXT NOT NULL DEFAULT ''`,
+  `ALTER TABLE "Settings" ADD COLUMN "smtpSecure" INTEGER NOT NULL DEFAULT 0`,
+  `ALTER TABLE "Discussion" ADD COLUMN "categoryId" INTEGER`,
 ];
 
 // Prisma 7 + SQLite 生成的 DDL
@@ -198,6 +205,12 @@ const MIGRATION_SQL = [
     "homepageShowSubmissions" INTEGER NOT NULL DEFAULT 0,
     "homepageShowDiscussions" INTEGER NOT NULL DEFAULT 0,
     "oauthProviders" TEXT NOT NULL DEFAULT '[]',
+    "smtpHost" TEXT NOT NULL DEFAULT '',
+    "smtpPort" INTEGER NOT NULL DEFAULT 587,
+    "smtpUser" TEXT NOT NULL DEFAULT '',
+    "smtpPass" TEXT NOT NULL DEFAULT '',
+    "smtpFrom" TEXT NOT NULL DEFAULT '',
+    "smtpSecure" INTEGER NOT NULL DEFAULT 0,
     "updatedAt" TEXT NOT NULL DEFAULT (datetime('now'))
   )`,
 
@@ -347,4 +360,18 @@ const MIGRATION_SQL = [
   `CREATE INDEX "TrainingSubmission_userId_idx" ON "TrainingSubmission"("userId")`,
   `CREATE INDEX "TrainingSubmission_trainingId_userId_idx" ON "TrainingSubmission"("trainingId", "userId")`,
   `CREATE INDEX "TrainingSubmission_trainingProblemId_idx" ON "TrainingSubmission"("trainingProblemId")`,
+
+  `CREATE TABLE "DiscussionCategory" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "name" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
+    "description" TEXT NOT NULL DEFAULT '',
+    "icon" TEXT NOT NULL DEFAULT 'MessageSquare',
+    "color" TEXT NOT NULL DEFAULT '#3b82f6',
+    "sortOrder" INTEGER NOT NULL DEFAULT 0,
+    "enabled" INTEGER NOT NULL DEFAULT 1,
+    "createdAt" TEXT NOT NULL DEFAULT (datetime('now'))
+  )`,
+
+  `CREATE UNIQUE INDEX "DiscussionCategory_slug_key" ON "DiscussionCategory"("slug")`,
 ];
