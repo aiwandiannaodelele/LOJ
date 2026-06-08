@@ -4,7 +4,7 @@ import { useSession, signIn, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
 import {
-  Loader2, Trophy, Send, CheckCircle2, Save, X, Globe, Mail, Quote, Pencil, User, FileText, Link2, Camera, Upload, Trash2, Unlink,
+  Loader2, Trophy, Send, CheckCircle2, Save, X, Globe, Mail, Quote, Pencil, User, FileText, Link2, Camera, Upload, Trash2, Unlink, Shield,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
