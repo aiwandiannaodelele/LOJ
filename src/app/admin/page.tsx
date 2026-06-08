@@ -21,6 +21,8 @@ import {
   Shield,
   Layout,
   FileCode,
+  Mail,
+  MessageSquare,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
@@ -126,6 +128,22 @@ const adminCards = [
     icon: Shield,
     color: "text-rose-500",
     bg: "bg-rose-500/10",
+  },
+  {
+    title: "邮件配置",
+    desc: "SMTP 邮箱发送设置",
+    href: "/admin/smtp",
+    icon: Mail,
+    color: "text-sky-500",
+    bg: "bg-sky-500/10",
+  },
+  {
+    title: "讨论区管理",
+    desc: "管理讨论分区与开关",
+    href: "/admin/discussion-categories",
+    icon: MessageSquare,
+    color: "text-green-500",
+    bg: "bg-green-500/10",
   },
 ];
 
