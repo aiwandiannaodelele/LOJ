@@ -28,6 +28,7 @@ export default function RegisterPage() {
   const [turnstileToken, setTurnstileToken] = useState("");
   const turnstileRef = useRef<string | null>(null);
   const [turnstileSiteKey, setTurnstileSiteKey] = useState("");
+  const [siteIcon, setSiteIcon] = useState<string | null>(null);
   const [siteName, setSiteName] = useState("LOJ");
   const [oauthProviders, setOauthProviders] = useState<string[]>([]);
 
