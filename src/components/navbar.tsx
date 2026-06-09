@@ -10,7 +10,7 @@ import {
 import * as Icons from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { NotificationBell } from "@/components/notification-bell";
+import NotificationBell from "@/components/notification-bell";
 import { DEFAULT_SITE_ICON, DEFAULT_SITE_NAME } from "@/lib/default-logo";
 import { useState, useRef, useEffect } from "react";
 
