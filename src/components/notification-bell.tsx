@@ -42,23 +42,26 @@ export default function NotificationBell() {
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-80 rounded-lg border bg-card shadow-lg z-50">
-          <div className="flex items-center justify-between px-4 py-2.5 border-b">
-            <span className="text-sm font-medium">通知</span>
+        <div className="absolute right-0 mt-2 w-80 rounded-xl border bg-card shadow-xl z-50 overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-3 border-b bg-muted/30">
+            <span className="text-sm font-semibold">通知</span>
             {unread > 0 && <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={markAllRead}>全部已读</Button>}
           </div>
           <div className="max-h-[360px] overflow-y-auto">
             {loading ? <div className="flex items-center justify-center py-8"><Loader2 className="h-4 w-4 animate-spin text-muted-foreground" /></div> :
              notifs.length === 0 ? <p className="text-sm text-muted-foreground text-center py-8">暂无通知</p> :
              notifs.map(n => (
-               <Link key={n.id} href={n.link || "#"} onClick={() => setOpen(false)} className={`block px-4 py-3 hover:bg-accent/50 transition-colors border-b last:border-b-0 ${!n.isRead ? "bg-primary/5" : ""}`}>
-                 <div className="text-sm font-medium truncate">{n.title}</div>
-                 {n.body && <div className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{n.body}</div>}
-                 <div className="text-[10px] text-muted-foreground mt-1">{new Date(n.createdAt).toLocaleString("zh-CN")}</div>
+               <Link key={n.id} href={n.link || "#"} onClick={() => setOpen(false)} className={`flex items-start gap-3 px-4 py-3.5 hover:bg-accent/50 transition-colors border-b last:border-b-0 ${!n.isRead ? "bg-primary/5" : ""}`}>
+                 <div className={`shrink-0 mt-0.5 h-2 w-2 rounded-full ${!n.isRead ? "bg-primary" : "bg-muted-foreground/30"}`} />
+                 <div className="flex-1 min-w-0">
+                   <div className="text-sm font-medium truncate">{n.title}</div>
+                   {n.body && <div className="text-xs text-muted-foreground mt-1 line-clamp-2">{n.body}</div>}
+                   <div className="text-[10px] text-muted-foreground mt-1.5">{new Date(n.createdAt).toLocaleString("zh-CN")}</div>
+                 </div>
                </Link>
              ))}
           </div>
-          <Link href="/notifications" onClick={() => setOpen(false)} className="block text-center text-xs text-muted-foreground hover:text-foreground py-2 border-t">查看全部</Link>
+          <Link href="/notifications" onClick={() => setOpen(false)} className="block text-center text-xs text-muted-foreground hover:text-foreground hover:bg-muted/30 py-2.5 transition-colors">查看全部通知</Link>
         </div>
       )}
     </div>
