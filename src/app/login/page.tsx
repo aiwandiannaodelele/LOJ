@@ -117,16 +117,13 @@ export default function LoginPage() {
           </div>
 
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                登录中
-              </>
-            ) : (
-              "登录"
-            )}
+            {loading ? <> <Loader2 className="h-4 w-4 animate-spin mr-2" /> 登录中 </> : "登录"}
           </Button>
         </form>
+
+        <p className="text-center text-sm">
+          <Link href="/reset-password" className="text-muted-foreground hover:text-primary transition-colors">忘记密码？</Link>
+        </p>
 
         {oauthProviders.length > 0 && (
           <div className="space-y-2">

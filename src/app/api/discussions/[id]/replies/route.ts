@@ -34,15 +34,23 @@ export async function POST(
   }
 
   const reply = await prisma.discussionReply.create({
-    data: {
-      discussionId,
-      userId: parseInt(session.user.id),
-      content: body.content,
-    },
-    include: {
-      user: { select: { id: true, name: true } },
-    },
+    data: { discussionId, userId: parseInt(session.user.id), content: body.content },
+    include: { user: { select: { id: true, name: true } } },
   });
+
+  // 通知帖主
+  const discussionFull = await prisma.discussion.findUnique({ where: { id: discussionId }, select: { userId: true, title: true } });
+  if (discussionFull && discussionFull.userId !== parseInt(session.user.id)) {
+    await prisma.notification.create({
+      data: {
+        userId: discussionFull.userId,
+        type: "reply",
+        title: "新回复",
+        body: `${session.user.name} 回复了你的讨论「${discussionFull.title.slice(0, 50)}」`,
+        link: `/discussions/${discussionId}`,
+      },
+    });
+  }
 
   return NextResponse.json(reply, { status: 201 });
 }
