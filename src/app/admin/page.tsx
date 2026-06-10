@@ -146,13 +146,7 @@ const adminCards = [
     bg: "bg-green-500/10",
   },
   {
-    title: "安全设置",
-    desc: "人机验证与安全策略",
-    href: "/admin/settings",
-    icon: Shield,
-    color: "text-orange-500",
-    bg: "bg-orange-500/10",
-  },
+    title: "讨论区管理",
 ];
 
 export default function AdminDashboardPage() {
