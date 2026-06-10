@@ -38,6 +38,7 @@ interface SiteSettings {
   runCooldown: number;
   maxSubmitsPerHour: number;
   allowRegistration: boolean;
+  turnstileSiteKey: string;
   footerText: string;
   aiApiKey: string;
   aiBaseUrl: string;
@@ -115,6 +116,7 @@ export default function AdminSettingsPage() {
           runCooldown: settings.runCooldown,
           maxSubmitsPerHour: settings.maxSubmitsPerHour,
           allowRegistration: settings.allowRegistration,
+          turnstileSiteKey: settings.turnstileSiteKey || "",
           footerText: settings.footerText,
           aiApiKey: settings.aiApiKey,
           aiBaseUrl: settings.aiBaseUrl,
@@ -411,6 +413,12 @@ export default function AdminSettingsPage() {
                 setSettings({ ...settings, allowRegistration: v })
               }
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Turnstile Site Key</Label>
+            <Input value={settings.turnstileSiteKey} onChange={e => setSettings({ ...settings, turnstileSiteKey: e.target.value })} placeholder="Cloudflare Turnstile Site Key" />
+            <p className="text-xs text-muted-foreground">留空则禁用人机验证。服务端需设 TURNSTILE_SECRET_KEY</p>
           </div>
 
           <div className="flex justify-end pt-2">
