@@ -413,9 +413,6 @@ export default function AdminSettingsPage() {
             />
           </div>
 
-          {/* Security */}
-          </div>
-
           <div className="flex justify-end pt-2">
             <Button onClick={handleSave} disabled={saving} className="gap-2">
               {saving ? (
