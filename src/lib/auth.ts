@@ -34,8 +34,8 @@ try {
   }
 } catch {}
 
-// 每次冷启动自动执行增量迁移（加新列）
-autoMigrate(prisma).catch(() => {});
+// 每次冷启动自动执行增量迁移（确保完成后再初始化 NextAuth）
+try { await autoMigrate(prisma); } catch {}
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
