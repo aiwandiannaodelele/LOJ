@@ -249,6 +249,9 @@ model Settings {
   turnstileSiteKey         String   @default("")
   turnstileEnabled         Boolean  @default(false)
   turnstileSecretKey       String   @default("")
+  adsEnabled               Boolean  @default(false)
+  adsPublisherId           String   @default("")
+  adsAutoAds               Boolean  @default(false)
   updatedAt                DateTime @updatedAt
 }
 

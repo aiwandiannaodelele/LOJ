@@ -68,6 +68,9 @@ export async function PUT(request: Request) {
     turnstileSiteKey?: string;
     turnstileEnabled?: boolean;
     turnstileSecretKey?: string;
+    adsEnabled?: boolean;
+    adsPublisherId?: string;
+    adsAutoAds?: boolean;
     maxRegistersPerHour?: number;
   };
 
@@ -147,6 +150,9 @@ export async function PUT(request: Request) {
   if (body.turnstileSiteKey !== undefined) data.turnstileSiteKey = body.turnstileSiteKey;
   if (body.turnstileEnabled !== undefined) data.turnstileEnabled = body.turnstileEnabled;
   if (body.turnstileSecretKey !== undefined) data.turnstileSecretKey = body.turnstileSecretKey;
+  if (body.adsEnabled !== undefined) data.adsEnabled = body.adsEnabled;
+  if (body.adsPublisherId !== undefined) data.adsPublisherId = body.adsPublisherId;
+  if (body.adsAutoAds !== undefined) data.adsAutoAds = body.adsAutoAds;
   if (body.maxRegistersPerHour !== undefined) data.maxRegistersPerHour = body.maxRegistersPerHour;
 
   let settings = await prisma.settings.findFirst();

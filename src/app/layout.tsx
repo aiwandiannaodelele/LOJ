@@ -50,19 +50,29 @@ export default async function RootLayout({
 }>) {
   let siteName = DEFAULT_SITE_NAME;
   let footerText = "";
+  let adsEnabled = false;
+  let adsPublisherId = "";
+  let adsAutoAds = false;
   try {
     const settings = await prisma.settings.findFirst();
     if (settings?.siteName) siteName = settings.siteName;
     if (settings?.footerText) footerText = settings.footerText;
-  } catch {
-    // ignore
-  }
+    adsEnabled = settings?.adsEnabled ?? false;
+    adsPublisherId = settings?.adsPublisherId || "";
+    adsAutoAds = settings?.adsAutoAds ?? false;
+  } catch {}
 
   return (
     <html lang="zh-CN" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-background font-sans antialiased`}
       >
+        {adsEnabled && adsPublisherId && (
+          <script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsPublisherId}`} crossOrigin="anonymous" />
+        )}
+        {adsEnabled && adsAutoAds && adsPublisherId && (
+          <script dangerouslySetInnerHTML={{ __html: `(adsbygoogle = window.adsbygoogle || []).push({});` }} />
+        )}
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

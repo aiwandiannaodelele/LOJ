@@ -23,6 +23,7 @@ import {
   FileCode,
   Mail,
   MessageSquare,
+  DollarSign,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
@@ -144,6 +145,14 @@ const adminCards = [
     icon: Shield,
     color: "text-orange-500",
     bg: "bg-orange-500/10",
+  },
+  {
+    title: "广告管理",
+    desc: "Google AdSense 配置",
+    href: "/admin/ads",
+    icon: DollarSign,
+    color: "text-yellow-500",
+    bg: "bg-yellow-500/10",
   },
   {
     title: "讨论区管理",
