@@ -193,6 +193,7 @@ export default function HomePage() {
           )}
         </div>
       )}
+      <PageAd position="slot_home_bottom" className="min-h-[90px]" />
     </div>
   );
 }
