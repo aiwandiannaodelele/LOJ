@@ -50,7 +50,7 @@ export async function POST(request: Request) {
     try { await autoMigrate(prisma); } catch {}
     
     // 安全检查：如果系统已有管理员，需要管理员权限才能操作
-    const existingAdminCount = await prisma.user.count({ where: { userGroup: { isAdmin: true }, deletedAt: null } });
+    const existingAdminCount = await prisma.user.count({ where: { userGroup: { isAdmin: true } } });
     if (existingAdminCount > 0) {
       const session = await auth();
       if (!session || !session.user.isAdmin) {
