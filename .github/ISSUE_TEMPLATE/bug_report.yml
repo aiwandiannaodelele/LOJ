@@ -1,0 +1,36 @@
+name: 🐛 Bug Report
+description: 报告一个 bug
+title: "[Bug] "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: "感谢你花时间报告 bug！请填写以下信息帮助我们定位问题。"
+  - type: textarea
+    id: description
+    attributes:
+      label: 描述
+      description: 发生了什么问题？
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: 复现步骤
+      description: 如何触发这个 bug？
+      placeholder: |
+        1. 打开 ...
+        2. 点击 ...
+        3. 看到错误 ...
+  - type: input
+    id: version
+    attributes:
+      label: 版本/环境
+      description: 部署平台、浏览器等
+      placeholder: Vercel / Docker / Netlify
+  - type: textarea
+    id: logs
+    attributes:
+      label: 日志
+      description: 相关的错误日志（如有）
+      render: shell
