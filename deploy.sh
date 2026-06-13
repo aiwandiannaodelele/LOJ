@@ -154,9 +154,16 @@ echo -e "  ${B}访问地址${R}  ${C}http://localhost:${APP_PORT}${R}"
 echo -e "  ${B}初始化  ${R}  ${C}http://localhost:${APP_PORT}/init${R}"
 echo -e ""
 echo -e "  ${D}管理命令:${R}"
-echo -e "  启动       docker compose up -d"
-echo -e "  停止       docker compose down"
-echo -e "  查看日志   docker compose logs -f"
-echo -e "  重新构建   docker compose up -d --build"
 echo -e "  更新部署   git pull && docker compose up -d --build"
+echo ""
+
+# ── 自动更新 ──
+echo -ne "  ${B}启用自动更新？${R} (每5分钟检查 GitHub 更新) [Y/n]: "
+read -r AUTO
+if [ "${AUTO:-y}" != "n" ] && [ "${AUTO:-y}" != "N" ]; then
+  (crontab -l 2>/dev/null | grep -v "loj/auto-update"; echo "*/5 * * * * cd $(pwd) && ./auto-update.sh") | crontab -
+  ok "自动更新已启用（每5分钟）"
+else
+  info "跳过自动更新"
+fi
 echo ""
