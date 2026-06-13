@@ -9,7 +9,7 @@
     <img src="https://img.shields.io/badge/Prisma-7-2D3748" alt="Prisma 7" />
     <img src="https://img.shields.io/badge/TypeScript-5-blue" alt="TypeScript" />
     <img src="https://img.shields.io/badge/Tailwind-v4-06B6D4" alt="Tailwind v4" />
-    <img src="https://img.shields.io/badge/license-MIT-green" alt="MIT License" />
+    <img src="https://img.shields.io/badge/license-AGPL--3.0-blue" alt="AGPL-3.0 License" />
   </p>
 </div>
 
@@ -116,4 +116,4 @@ npm start
 
 ## 許可證
 
-MIT
+[GNU AGPL v3.0](LICENSE)
