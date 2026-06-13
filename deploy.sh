@@ -2,13 +2,13 @@
 set -e
 R='\033[0m' B='\033[1m' G='\033[32m' C='\033[36m' M='\033[35m' RED='\033[31m'
 OK="  ${G}✔${R}" DOT="${C}•${R}"
-ok()  { echo -e "${OK} $1"; }
-info(){ echo -e "${DOT} $1"; }
-tit(){ echo -e "\n${B}${M}$1${R}"; }
-fail(){ echo -e "${RED}✘ $1${R}"; exit 1; }
+ok()  { printf "${OK} %s\n" "$1"; }
+info(){ printf "${DOT} %s\n" "$1"; }
+tit() { printf "\n${B}${M}%s${R}\n" "$1"; }
+fail(){ printf "${RED}✘ %s${R}\n" "$1"; exit 1; }
 
-echo -ne "\n${B}LOJ 一键部署${R}\n\n"
-echo -ne "  使用国内镜像 (gitcode+npmirror)? [Y/n]: "
+printf "\n${B}LOJ 一键部署${R}\n\n"
+printf "  使用国内镜像 (gitcode+npmirror)? [Y/n]: "
 read -r M </dev/tty; USE_MIRROR=true
 [ "${M:-y}" = "n" ] && USE_MIRROR=false
 $USE_MIRROR && ok "国内加速" || info "直连 GitHub"
@@ -17,11 +17,11 @@ GIT_URL="https://github.com/aiwandiannaodelele/LOJ.git"
 $USE_MIRROR && GIT_URL="https://gitcode.com/aiwandiannaodelele/LOJ.git"
 
 DIR="$HOME/loj"
-echo -ne "  安装目录 [$DIR]: "; read -r D </dev/tty; DIR="${D:-$DIR}"
+printf "  安装目录 [$DIR]: "; read -r D </dev/tty; DIR="${D:-$DIR}"
 ok "$DIR"
 
-echo -e "\n  部署方式: [1] Docker  [2] PM2"
-echo -ne "  选择 [1]: "; read -r MODE </dev/tty; MODE="${MODE:-1}"
+printf "\n  部署方式: [1] Docker  [2] PM2\n"
+printf "  选择 [1]: "; read -r MODE </dev/tty; MODE="${MODE:-1}"
 
 # ── 克隆 ──
 tit "克隆仓库"
@@ -45,7 +45,7 @@ if [ "$MODE" = "1" ]; then
     ok "部署完成 → http://localhost:3000/init" || \
     fail "Docker 启动失败，查看日志: docker compose logs"
 
-  echo -ne "  启用自动更新 (cron 每5分钟)? [Y/n]: "; read -r A </dev/tty
+  printf "  启用自动更新 (cron 每5分钟)? [Y/n]: "; read -r A </dev/tty
   if [ "${A:-y}" != "n" ]; then
     (crontab -l 2>/dev/null | grep -v loj/auto-update; echo "*/5 * * * * cd $DIR && ./auto-update.sh") | crontab -
     ok "自动更新已启用"
@@ -71,7 +71,7 @@ elif [ "$MODE" = "2" ]; then
   npm run pm2:start
   ok "PM2 已启动 → http://localhost:3000/init"
 
-  echo -ne "  启用自动更新? [Y/n]: "; read -r A </dev/tty
+  printf "  启用自动更新? [Y/n]: "; read -r A </dev/tty
   if [ "${A:-y}" != "n" ]; then
     cat > /tmp/loj-pm2-update.sh << 'EOF'
 #!/bin/bash
@@ -89,7 +89,7 @@ EOF
 
 fi
 
-echo -e "\n${G}${B}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${R}"
-echo -e "${G}${B}  LOJ 部署完成！${R}"
-echo -e "${G}${B}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${R}"
-echo ""
+printf "\n${G}${B}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${R}"
+printf "${G}${B}  LOJ 部署完成！${R}"
+printf "${G}${B}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${R}"
+printf "\n"
