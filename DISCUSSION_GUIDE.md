@@ -1,21 +1,53 @@
-# 💬 讨论区指南
+# 💬 Discussion Guide
 
-欢迎来到 LOJ 讨论区！这里分五个板块：
+Welcome to the LOJ discussions!
+
+| Category | Purpose |
+|----------|---------|
+| 💬 General | Casual chat about the project |
+| 🙋 Q&A | Deployment, configuration, usage |
+| 🎉 Show and tell | Share your OJ deployment |
+| 💡 Ideas | Feature suggestions |
+| 📢 Announcements | Official updates |
+
+## Posting Tips
+
+- Use a clear title
+- Include platform + error logs for help requests
+- Describe use cases for feature suggestions
+
+<details>
+<summary>🇨🇳 简体中文</summary>
+
+## 💬 讨论区指南
 
 | 板块 | 用途 |
 |------|------|
-| 💬 综合讨论 | 项目相关随意聊 |
-| 🙋 问答求助 | 部署、配置、使用问题 |
-| 🎉 作品展示 | 晒你的 OJ 站点 |
-| 💡 功能建议 | 想要什么新功能 |
-| 📢 公告 | 官方更新通知 |
+| 💬 General | 随意聊聊 |
+| 🙋 Q&A | 部署、配置、使用问题 |
+| 🎉 Show and tell | 晒你的 OJ 站点 |
+| 💡 Ideas | 新功能建议 |
+| 📢 Announcements | 官方公告 |
 
-## 发帖建议
+### 发帖建议
 
 - 标题清楚概括内容
-- 问题求助贴附上平台 + 错误日志
+- 求助附上平台 + 错误日志
 - 功能建议说明使用场景
 
-## 资料要求
+</details>
 
-功能建议贴请注明你的部署方式（Docker / Vercel / 自托管）。
+<details>
+<summary>🇭🇰 繁體中文</summary>
+
+## 💬 討論區指南
+
+| 板塊 | 用途 |
+|------|------|
+| 💬 General | 隨意聊聊 |
+| 🙋 Q&A | 部署、配置、使用問題 |
+| 🎉 Show and tell | 分享你的 OJ 站點 |
+| 💡 Ideas | 新功能建議 |
+| 📢 Announcements | 官方公告 |
+
+</details>

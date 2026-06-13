@@ -116,3 +116,12 @@ npm start
 ## License
 
 [GNU AGPL v3.0](LICENSE)
+
+## Links
+
+- [Security Policy](SECURITY.md)
+- [Contributing Guide](CONTRIBUTING.md)
+- [Discussion Guide](DISCUSSION_GUIDE.md)
+- [Discussions](https://github.com/aiwandiannaodelele/LOJ/discussions)
+- [Report Bug](https://github.com/aiwandiannaodelele/LOJ/issues/new?template=bug_report.yml)
+- [Request Feature](https://github.com/aiwandiannaodelele/LOJ/issues/new?template=feature_request.yml)

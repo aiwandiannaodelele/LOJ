@@ -116,3 +116,12 @@ npm start
 ## 许可证
 
 [GNU AGPL v3.0](LICENSE)
+
+## 相关链接
+
+- [安全策略](SECURITY.md)
+- [贡献指南](CONTRIBUTING.md)
+- [讨论区指南](DISCUSSION_GUIDE.md)
+- [讨论区](https://github.com/aiwandiannaodelele/LOJ/discussions)
+- [报告 Bug](https://github.com/aiwandiannaodelele/LOJ/issues/new?template=bug_report.yml)
+- [功能建议](https://github.com/aiwandiannaodelele/LOJ/issues/new?template=feature_request.yml)

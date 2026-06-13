@@ -117,3 +117,12 @@ npm start
 ## 許可證
 
 [GNU AGPL v3.0](LICENSE)
+
+## 相關鏈接
+
+- [安全策略](SECURITY.md)
+- [貢獻指南](CONTRIBUTING.md)
+- [討論區指南](DISCUSSION_GUIDE.md)
+- [討論區](https://github.com/aiwandiannaodelele/LOJ/discussions)
+- [報告 Bug](https://github.com/aiwandiannaodelele/LOJ/issues/new?template=bug_report.yml)
+- [功能建議](https://github.com/aiwandiannaodelele/LOJ/issues/new?template=feature_request.yml)
