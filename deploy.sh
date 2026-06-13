@@ -41,8 +41,9 @@ if [ "$MODE" = "1" ]; then
   [ ! -f .env ] && cp .env.docker.example .env && ok ".env 已创建"
 
   tit "构建 & 启动"
-  docker compose --profile pgsql up -d --build
-  ok "部署完成 → http://localhost:3000/init"
+  docker compose --profile pgsql up -d --build && \
+    ok "部署完成 → http://localhost:3000/init" || \
+    fail "Docker 启动失败，查看日志: docker compose logs"
 
   echo -ne "  启用自动更新 (cron 每5分钟)? [Y/n]: "; read -r A
   if [ "${A:-y}" != "n" ]; then
