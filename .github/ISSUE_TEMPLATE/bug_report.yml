@@ -1,36 +1,36 @@
-name: 🐛 Bug Report
-description: 报告一个 bug
+name: 🐛 Bug Report / Bug 报告
+description: File a bug report / 报告一个 bug
 title: "[Bug] "
 labels: [bug]
 body:
   - type: markdown
     attributes:
-      value: "感谢你花时间报告 bug！请填写以下信息帮助我们定位问题。"
+      value: "Thanks for taking the time to report a bug! / 感谢你花时间报告 bug！"
   - type: textarea
     id: description
     attributes:
-      label: 描述
-      description: 发生了什么问题？
+      label: Description / 描述
+      description: What happened? / 发生了什么问题？
     validations:
       required: true
   - type: textarea
     id: reproduction
     attributes:
-      label: 复现步骤
-      description: 如何触发这个 bug？
+      label: Steps to Reproduce / 复现步骤
+      description: How to trigger this bug? / 如何触发这个 bug？
       placeholder: |
-        1. 打开 ...
-        2. 点击 ...
-        3. 看到错误 ...
+        1. Go to / 打开 ...
+        2. Click / 点击 ...
+        3. See error / 看到错误 ...
   - type: input
     id: version
     attributes:
-      label: 版本/环境
-      description: 部署平台、浏览器等
+      label: Environment / 环境
+      description: Deployment platform, browser, etc / 部署平台、浏览器等
       placeholder: Vercel / Docker / Netlify
   - type: textarea
     id: logs
     attributes:
-      label: 日志
-      description: 相关的错误日志（如有）
+      label: Logs / 日志
+      description: Relevant error logs (if any) / 相关的错误日志（如有）
       render: shell
