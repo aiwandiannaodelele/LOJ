@@ -4,6 +4,7 @@ R='\033[0m' B='\033[1m' G='\033[32m' C='\033[36m' M='\033[35m' RED='\033[31m'
 OK="  ${G}✔${R}" DOT="${C}•${R}"
 ok()  { printf "${OK} %s\n" "$1"; }
 info(){ printf "${DOT} %s\n" "$1"; }
+warn(){ printf "  ${RED}!${R} %s\n" "$1"; }
 tit() { printf "\n${B}${M}%s${R}\n" "$1"; }
 fail(){ printf "${RED}✘ %s${R}\n" "$1"; exit 1; }
 
@@ -19,36 +20,48 @@ check_port() {
 }
 
 detect_existing() {
-  local dir="$1" found=0
-  if [ -f "$dir/package.json" ]; then
-    grep -q '"name": "loj"' "$dir/package.json" 2>/dev/null && found=1
+  local dir="$1"
+  # git 仓库检测
+  if [ -f "$dir/package.json" ] && grep -q '"name": "loj"' "$dir/package.json" 2>/dev/null; then
+    return 0
   fi
-  return $((1 - found))
+  # compose 文件检测（预构建模式）
+  if [ -f "$dir/docker-compose.yml" ]; then
+    return 0
+  fi
+  # Docker 容器检测
+  if docker ps --format '{{.Names}}' 2>/dev/null | grep -q loj; then
+    return 0
+  fi
+  return 1
 }
 
 uninstall_loj() {
   local dir="$1"
   tit "卸载 LOJ"
 
-  # PM2
-  if command -v pm2 &>/dev/null; then
-    if pm2 id loj 2>/dev/null | grep -qE '[0-9]+'; then
-      pm2 delete loj 2>/dev/null; ok "PM2 进程已停止"
-    fi
-  fi
-
   # Docker
   if [ -f "$dir/docker-compose.yml" ]; then
     (cd "$dir" && docker compose down -v 2>/dev/null) && ok "Docker 容器已停止"
+  else
+    # 没有 compose 文件时直接按容器名停
+    docker stop loj-app loj-db 2>/dev/null && docker rm loj-app loj-db 2>/dev/null && ok "Docker 容器已停止" || true
   fi
 
-  # Crontab (Docker 自动更新)
-  crontab -l 2>/dev/null | grep -v "loj/auto-update" | crontab - 2>/dev/null || true
-  # Crontab (PM2 自动更新)
-  crontab -l 2>/dev/null | grep -v "loj-pm2-update" | crontab - 2>/dev/null || true
+  # PM2
+  if command -v pm2 &>/dev/null; then
+    pm2 delete loj 2>/dev/null && ok "PM2 进程已停止" || true
+  fi
+
+  # Crontab
+  crontab -l 2>/dev/null | grep -v "loj/" | crontab - 2>/dev/null || true
+  crontab -l 2>/dev/null | grep -v "loj-pm2" | crontab - 2>/dev/null || true
   ok "自动更新已移除"
 
-  rm -rf "$dir" 2>/dev/null && ok "目录已删除: $dir" || warn "目录删除失败: $dir"
+  # 删除目录
+  if [ -d "$dir" ]; then
+    rm -rf "$dir" 2>/dev/null && ok "目录已删除: $dir" || warn "目录删除失败: $dir"
+  fi
   printf "\n${G}${B}  LOJ 已彻底卸载${R}\n"
   exit 0
 }
@@ -59,12 +72,14 @@ if detect_existing "$DIR"; then
   tit "检测到现有部署: $DIR"
   status=""
   if command -v pm2 &>/dev/null && pm2 id loj 2>/dev/null | grep -qE '[0-9]+'; then
-    status="${status}  运行方式: PM2\n"
-    port="$(pm2 show loj 2>/dev/null | awk '/port/ {print $NF}' | head -1)"
-    status="${status}  端口: ${port:-3000}\n"
+    status="${status}  ─ 运行方式: PM2\n"
   fi
-  if docker ps --format '{{.Names}}' 2>/dev/null | grep -q loj; then
-    status="${status}  运行方式: Docker\n"
+  if docker ps --format '{{.Names}}' 2>/dev/null | grep -q loj-app; then
+    status="${status}  ─ 运行方式: Docker\n"
+  fi
+  if [ -f "$DIR/docker-compose.yml" ]; then
+    PORT_LINE=$(grep '3000:3000' "$DIR/docker-compose.yml" 2>/dev/null | head -1)
+    status="${status}  ─ 端口: ${PORT_LINE%%:*} (配置)\n"
   fi
   [ -n "$status" ] && printf "$status"
   printf "\n  [U] 卸载  [R] 重新部署  [C] 取消\n"
