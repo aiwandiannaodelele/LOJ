@@ -28,7 +28,7 @@ COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
 
 # 启动脚本：等待数据库就绪后自动建表
-RUN printf '#!/bin/sh\nfor i in 1 2 3 4 5 6 7 8 9 10; do\n  echo "[startup] prisma db push attempt $i..."\n  npx prisma db push && break\n  sleep 3\ndone\nexec node server.js\n' > /app/start.sh && chmod +x /app/start.sh
+RUN printf '#!/bin/sh\nfor i in 1 2 3 4 5 6 7 8 9 10; do\n  echo "[startup] prisma db push attempt $i..."\n  node node_modules/prisma/build/index.js db push && break\n  sleep 3\ndone\nexec node server.js\n' > /app/start.sh && chmod +x /app/start.sh
 
 RUN mkdir -p /app/data && chown -R nextjs:nodejs /app
 
