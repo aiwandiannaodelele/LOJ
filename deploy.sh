@@ -76,10 +76,9 @@ if detect_existing "$DIR"; then
   fi
   if docker ps --format '{{.Names}}' 2>/dev/null | grep -q loj-app; then
     status="${status}  ─ 运行方式: Docker\n"
-  fi
-  if [ -f "$DIR/docker-compose.yml" ]; then
-    PORT_LINE=$(grep '3000:3000' "$DIR/docker-compose.yml" 2>/dev/null | head -1)
-    status="${status}  ─ 端口: ${PORT_LINE%%:*} (配置)\n"
+    # 从容器读取实际端口
+    CURR_PORT=$(docker port loj-app 2>/dev/null | grep 3000 | head -1 | awk -F: '{print $NF}')
+    [ -n "$CURR_PORT" ] && status="${status}  ─ 端口: $CURR_PORT (运行中)\n"
   fi
   [ -n "$status" ] && printf "$status"
   printf "\n  [U] 卸载  [R] 重新部署  [C] 取消\n"
@@ -122,13 +121,19 @@ fi
 
 # ── 端口检测 ──
 APP_PORT=3000
-while check_port "$APP_PORT"; do
-  printf "\n  ${RED}!${R} 端口 $APP_PORT 已被占用\n"
-  printf "  换一个端口 (回车=$((APP_PORT + 1))): "
-  read -r NEW_PORT </dev/tty
-  APP_PORT="${NEW_PORT:-$((APP_PORT + 1))}"
-done
-ok "端口 $APP_PORT"
+if docker ps --format '{{.Names}}' 2>/dev/null | grep -q loj-app; then
+  CURR_PORT=$(docker port loj-app 2>/dev/null | grep 3000 | head -1 | awk -F: '{print $NF}')
+  [ -n "$CURR_PORT" ] && APP_PORT="$CURR_PORT"
+  ok "沿用现有端口 $APP_PORT"
+else
+  while check_port "$APP_PORT"; do
+    printf "\n  ${RED}!${R} 端口 $APP_PORT 已被占用\n"
+    printf "  换一个端口 (回车=$((APP_PORT + 1))): "
+    read -r NEW_PORT </dev/tty
+    APP_PORT="${NEW_PORT:-$((APP_PORT + 1))}"
+  done
+  ok "端口 $APP_PORT"
+fi
 
 # ── 克隆 / 下载 compose 文件 ──
 mkdir -p "$DIR"
