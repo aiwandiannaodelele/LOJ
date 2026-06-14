@@ -25,8 +25,8 @@ REMOTE_HASH=$(git rev-parse "mirror/$BRANCH" 2>/dev/null)
 if [ "$LOCAL" != "$REMOTE_HASH" ] && [ -n "$REMOTE_HASH" ]; then
   echo "[$(date)] New commit $REMOTE_HASH, pulling..." | tee -a "$LOG"
   git pull mirror "$BRANCH"
-  PGSQL=""
-  grep -q 'DB_PROVIDER=postgresql' .env 2>/dev/null && PGSQL="--profile pgsql"
+  PGSQL="--profile pgsql"
+  grep -q 'DB_PROVIDER=sqlite' .env 2>/dev/null && PGSQL=""
   docker compose $PGSQL up -d --build
   echo "[$(date)] Deployed!" >> "$LOG"
 else

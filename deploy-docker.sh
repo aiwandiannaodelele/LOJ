@@ -67,16 +67,13 @@ if [ ! -f "$ENV_FILE" ]; then
   echo ""
 
   echo -e "  ${B}数据库类型${R}"
-  echo -ne "  [1] SQLite (默认)  [2] PostgreSQL  [3] Turso 云端: "
+  echo -ne "  [1] PostgreSQL (默认)  [2] SQLite  [3] Turso 云端: "
   read -r DB_CHOICE
 
   case "${DB_CHOICE:-1}" in
     2)
-      DB_PROVIDER="postgresql"
-      echo -ne "  数据库密码 (默认=lojpass): "
-      read -r PG_PASS
-      PG_PASS="${PG_PASS:-lojpass}"
-      DB_URL="postgres://loj:${PG_PASS}@postgres:5432/loj"
+      DB_PROVIDER="sqlite"
+      DB_URL="file:./data/loj.db"
       ;;
     3)
       DB_PROVIDER="sqlite"
@@ -86,8 +83,11 @@ if [ ! -f "$ENV_FILE" ]; then
       read -r TURSO_TOKEN
       ;;
     *)
-      DB_PROVIDER="sqlite"
-      DB_URL="file:./data/loj.db"
+      DB_PROVIDER="postgresql"
+      echo -ne "  数据库密码 (默认=lojpass): "
+      read -r PG_PASS
+      PG_PASS="${PG_PASS:-lojpass}"
+      DB_URL="postgres://loj:${PG_PASS}@postgres:5432/loj"
       ;;
   esac
 
@@ -113,7 +113,7 @@ if [ ! -f "$ENV_FILE" ]; then
   ok "配置已写入 $ENV_FILE"
 else
   ok "已有 $ENV_FILE"
-  DB_PROVIDER=$(grep -oP 'DB_PROVIDER=\K.*' "$ENV_FILE" 2>/dev/null || echo "sqlite")
+  DB_PROVIDER=$(grep -oP 'DB_PROVIDER=\K.*' "$ENV_FILE" 2>/dev/null || echo "postgresql")
 fi
 
 # ── 构建 & 启动 ──
