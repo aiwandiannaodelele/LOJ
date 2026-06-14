@@ -148,7 +148,8 @@ if [ "$MODE" = "1" ]; then
   COMPOSE_F="-f docker-compose.yml -f docker-compose.$BUILD_MODE.yml"
 
   # 预构建模式：生成 compose 文件（无仓库时）
-  if [ ! -f docker-compose.yml ]; then
+  OVERRIDE_FILE="docker-compose.$BUILD_MODE.yml"
+  if [ ! -f "$OVERRIDE_FILE" ]; then
     cat > docker-compose.yml << 'DCOMPOSE'
 services:
   app:
