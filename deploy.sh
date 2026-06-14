@@ -127,7 +127,9 @@ if [ "$MODE" = "1" ]; then
   [ ! -f .env ] && cp .env.docker.example .env && ok ".env 已创建"
 
   tit "构建 & 启动"
-  docker compose --profile pgsql up -d --build && \
+  PGSQL=""
+  grep -q 'DB_PROVIDER=postgresql' .env 2>/dev/null && PGSQL="--profile pgsql"
+  docker compose $PGSQL up -d --build && \
     ok "部署完成 → http://localhost:$APP_PORT/init" || \
     fail "Docker 启动失败，查看日志: docker compose logs"
 
