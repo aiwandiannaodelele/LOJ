@@ -25,6 +25,7 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/prisma.config.ts .
 # 完整 node_modules，确保 prisma db push 所有依赖可用
 COPY --from=builder /app/node_modules ./node_modules
 
