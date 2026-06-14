@@ -106,8 +106,8 @@ ok "端口 $APP_PORT"
 # ── 克隆 ──
 tit "克隆仓库"
 if [ -d "$DIR/.git" ]; then
-  info "仓库已存在，拉取最新..."
-  (cd "$DIR" && git pull) && ok "已更新"
+  info "仓库已存在，同步最新..."
+  (cd "$DIR" && git fetch origin main 2>/dev/null && git reset --hard origin/main) && ok "已更新"
 else
   git clone "$GIT_URL" "$DIR" && ok "克隆完成"
 fi
@@ -119,7 +119,7 @@ if [ "$MODE" = "1" ]; then
   docker compose version &>/dev/null || fail "需要 Docker Compose"
   ok "Docker 已就绪"
 
-  # 修改端口
+  # 修改端口并记录，构建后恢复
   if [ "$APP_PORT" != "3000" ]; then
     sed -i '' "s/\"3000:3000\"/\"${APP_PORT}:3000\"/" docker-compose.yml 2>/dev/null || \
     sed -i "s/\"3000:3000\"/\"${APP_PORT}:3000\"/" docker-compose.yml 2>/dev/null
@@ -130,9 +130,12 @@ if [ "$MODE" = "1" ]; then
   tit "构建 & 启动"
   PGSQL="--profile pgsql"
   grep -q 'DB_PROVIDER=sqlite' .env 2>/dev/null && PGSQL=""
-  docker compose $PGSQL up -d --build && \
-    ok "部署完成 → http://localhost:$APP_PORT/init" || \
+  docker compose $PGSQL up -d --build || \
     fail "Docker 启动失败，查看日志: docker compose logs"
+
+  # 恢复 docker-compose.yml，保持仓库干净
+  git checkout docker-compose.yml 2>/dev/null || true
+  ok "部署完成 → http://localhost:$APP_PORT/init"
 
   printf "  启用自动更新 (cron 每5分钟)? [Y/n]: "; read -r A </dev/tty
   if [ "${A:-y}" != "n" ]; then
