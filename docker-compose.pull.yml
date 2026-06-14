@@ -1,3 +1,2 @@
-services:
-  app:
-    image: ghcr.io/aiwandiannaodelele/loj:latest
+# pull mode: image is already in docker-compose.yml
+services: {}

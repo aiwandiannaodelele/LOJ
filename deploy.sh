@@ -156,9 +156,7 @@ if [ "$MODE" = "1" ] && [ "$BUILD_MODE" = "pull" ]; then
   RAW_BASE="https://raw.githubusercontent.com/aiwandiannaodelele/LOJ/main"
   $USE_MIRROR && RAW_BASE="https://gitee.com/aiwandiannaoleleawafangnaodai/LOJ/raw/main"
   tit "下载 compose 文件"
-  for f in docker-compose.yml docker-compose.pull.yml; do
-    curl -fsSL "$RAW_BASE/$f?$(date +%s)" -o "$DIR/$f" && ok "$f" || fail "下载 $f 失败"
-  done
+  curl -fsSL "$RAW_BASE/docker-compose.yml?$(date +%s)" -o "$DIR/docker-compose.yml" && ok "docker-compose.yml" || fail "下载 docker-compose.yml 失败"
 elif [ "$MODE" = "1" ] && [ "$BUILD_MODE" = "build" ]; then
   # ── 源码构建：克隆仓库 ──
   tit "克隆仓库"
@@ -193,20 +191,21 @@ if [ "$MODE" = "1" ]; then
   docker compose version &>/dev/null || fail "需要 Docker Compose"
   ok "Docker 已就绪"
 
-  COMPOSE_F="-f docker-compose.yml -f docker-compose.$BUILD_MODE.yml"
+  COMPOSE_F="-f docker-compose.yml"
+  [ "$BUILD_MODE" = "build" ] && COMPOSE_F="-f docker-compose.yml -f docker-compose.build.yml"
 
   # 修改端口
   if [ "$APP_PORT" != "3000" ]; then
-    for f in docker-compose.yml docker-compose.$BUILD_MODE.yml; do
-      sed -i '' "s/\"3000:3000\"/\"${APP_PORT}:3000\"/" "$f" 2>/dev/null || \
-        sed -i "s/\"3000:3000\"/\"${APP_PORT}:3000\"/" "$f" 2>/dev/null || true
-    done
+    sed -i '' "s/\"3000:3000\"/\"${APP_PORT}:3000\"/" docker-compose.yml 2>/dev/null || \
+      sed -i "s/\"3000:3000\"/\"${APP_PORT}:3000\"/" docker-compose.yml 2>/dev/null || true
   fi
 
   # 镜像加速：替换为国内源
   if [ -n "$GHCR_MIRROR" ]; then
-    sed -i '' "s|ghcr.io/|$GHCR_MIRROR/|" docker-compose.pull.yml 2>/dev/null || \
-    sed -i "s|ghcr.io/|$GHCR_MIRROR/|" docker-compose.pull.yml 2>/dev/null
+    sed -i '' "s|ghcr.io/|$GHCR_MIRROR/|" docker-compose.yml 2>/dev/null || \
+    sed -i "s|ghcr.io/|$GHCR_MIRROR/|" docker-compose.yml 2>/dev/null
+  fi
+  if [ -n "$DOCKER_MIRROR" ]; then
     sed -i '' "s|postgres:17.4-alpine|$DOCKER_MIRROR|" docker-compose.yml 2>/dev/null || \
     sed -i "s|postgres:17.4-alpine|$DOCKER_MIRROR|" docker-compose.yml 2>/dev/null
   fi
@@ -230,7 +229,7 @@ EOF
   else
     docker compose $COMPOSE_F $PGSQL build || fail "构建失败"
     docker compose $COMPOSE_F $PGSQL up -d || fail "Docker 启动失败，查看日志: docker compose logs"
-    git checkout -- docker-compose.yml docker-compose.pull.yml docker-compose.build.yml 2>/dev/null || true
+    git checkout docker-compose.yml 2>/dev/null || true
   fi
 
   echo "$BUILD_MODE" > "$DIR/.build-mode"

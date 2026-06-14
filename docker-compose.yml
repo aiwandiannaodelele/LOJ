@@ -1,5 +1,6 @@
 services:
   app:
+    image: ghcr.io/aiwandiannaodelele/loj:latest
     container_name: loj-app
     ports:
       - "3000:3000"
