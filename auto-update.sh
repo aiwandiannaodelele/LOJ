@@ -7,11 +7,11 @@ LOG="/tmp/loj-autoupdate.log"
 
 # 优先用 Gitee 镜像，失败则用 GitHub
 REMOTE=$(git remote get-url origin 2>/dev/null)
-if echo "$REMOTE" | grep -q "gitcode"; then
+if echo "$REMOTE" | grep -qE "gitee|gitcode"; then
   GIT_URL="$REMOTE"
 else
   GIT_URL="https://github.com/aiwandiannaodelele/LOJ.git"
-  git ls-remote https://gitcode.com/aiwandiannaodelele/LOJ.git HEAD &>/dev/null && GIT_URL="https://gitcode.com/aiwandiannaodelele/LOJ.git"
+  git ls-remote https://gitee.com/aiwandiannaodeleawafangnaodai/LOJ HEAD &>/dev/null && GIT_URL="https://gitee.com/aiwandiannaodeleawafangnaodai/LOJ"
 fi
 
 echo "[$(date)] Checking for updates from $GIT_URL..." >> "$LOG"

@@ -76,13 +76,13 @@ fi
 # ── 基础配置 ──
 printf "\n${B}LOJ 一键部署${R}\n\n"
 
-printf "  使用国内镜像 (gitcode+npmirror)? [Y/n]: "
+printf "  使用国内镜像 (gitee+npmirror)? [Y/n]: "
 read -r M </dev/tty; USE_MIRROR=true
 [ "${M:-y}" = "n" ] && USE_MIRROR=false
 $USE_MIRROR && ok "国内加速" || info "直连 GitHub"
 
 GIT_URL="https://github.com/aiwandiannaodelele/LOJ.git"
-$USE_MIRROR && GIT_URL="https://gitcode.com/aiwandiannaodelele/LOJ.git"
+$USE_MIRROR && GIT_URL="https://gitee.com/aiwandiannaodeleawafangnaodai/LOJ"
 
 printf "  安装目录 [$DIR]: "; read -r D </dev/tty; DIR="${D:-$DIR}"
 ok "$DIR"

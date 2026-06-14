@@ -69,8 +69,8 @@
 
 - **Docker**: `Dockerfile` (multi-stage, standalone output). `docker compose --profile pgsql up -d --build` for PostgreSQL. No profile for SQLite-only.
 - **PM2**: `ecosystem.config.js` (SQLite, 1 instance, 500M max mem). `npm run pm2:start/stop/restart/logs`.
-- **`deploy.sh`**: Interactive (curl\|bash), picks Docker or PM2 mode, offers gitcode mirror + npm mirror.
-- **`auto-update.sh`**: Cron-based git polling with gitcode fallback.
+- **`deploy.sh`**: Interactive (curl\|bash), picks Docker or PM2 mode, offers gitee mirror + npm mirror.
+- **`auto-update.sh`**: Cron-based git polling with gitee/gitcode fallback.
 - **Vercel**: Zero-config (set env vars). Builds via `npm run build`.
 - **Netlify**: Native Next.js (`netlify.toml` with `npm run build` + node 22). No plugin needed.
 - **Cloudflare Pages**: `edgeone.json` config present. No `@opennextjs/cloudflare` or `wrangler.toml` in repo.
