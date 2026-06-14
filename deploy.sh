@@ -107,7 +107,13 @@ ok "端口 $APP_PORT"
 tit "克隆仓库"
 if [ -d "$DIR/.git" ]; then
   info "仓库已存在，同步最新..."
-  (cd "$DIR" && git fetch origin main 2>/dev/null && git reset --hard origin/main) && ok "已更新"
+  if (cd "$DIR" && git fetch origin main && git reset --hard origin/main); then
+    ok "已更新"
+  else
+    info "GitHub 超时，尝试镜像..."
+    MIRROR_URL="$GIT_URL"
+    (cd "$DIR" && git remote add mirror "$MIRROR_URL" 2>/dev/null || git remote set-url mirror "$MIRROR_URL" && git fetch mirror main && git reset --hard mirror/main) && ok "已更新（镜像）" || info "同步失败，使用现有代码"
+  fi
 else
   git clone "$GIT_URL" "$DIR" && ok "克隆完成"
 fi
@@ -125,7 +131,18 @@ if [ "$MODE" = "1" ]; then
     sed -i "s/\"3000:3000\"/\"${APP_PORT}:3000\"/" docker-compose.yml 2>/dev/null
   fi
 
-  [ ! -f .env ] && cp "$DIR/.env.docker.example" "$DIR/.env" && ok ".env 已创建"
+  [ ! -f .env ] && {
+    if [ -f "$DIR/.env.docker.example" ]; then
+      cp "$DIR/.env.docker.example" "$DIR/.env"
+    else
+      cat > "$DIR/.env" << 'EOF'
+DB_PROVIDER=postgresql
+DATABASE_URL=postgres://loj:lojpass@postgres:5432/loj
+DB_PASSWORD=lojpass
+EOF
+    fi
+    ok ".env 已创建"
+  }
 
   tit "构建 & 启动"
   PGSQL="--profile pgsql"
