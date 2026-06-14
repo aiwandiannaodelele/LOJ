@@ -110,12 +110,25 @@ printf "  选择 [1]: "; read -r MODE </dev/tty; MODE="${MODE:-1}"
 # ── 构建方式（仅 Docker）──
 BUILD_MODE="build"
 if [ "$MODE" = "1" ]; then
-  printf "\n  构建方式: [1] 预构建镜像 (ghcr.nju.edu.cn)  [2] 源码构建\n"
+  printf "\n  构建方式: [1] 预构建镜像 (ghcr.io)  [2] 源码构建\n"
   printf "  选择 [1]: "; read -r BUILD_CHOICE </dev/tty; BUILD_CHOICE="${BUILD_CHOICE:-1}"
   if [ "$BUILD_CHOICE" = "2" ]; then
     BUILD_MODE="build"; ok "源码构建"
   else
     BUILD_MODE="pull"; ok "预构建镜像"
+  fi
+
+  # Docker 镜像加速
+  printf "\n  使用国内 Docker 镜像加速？[Y/n]: "
+  read -r DM </dev/tty
+  if [ "${DM:-y}" != "n" ]; then
+    GHCR_MIRROR="ghcr.nju.edu.cn"
+    DOCKER_MIRROR="docker.1ms.run/"
+    ok "镜像加速：ghcr.nju.edu.cn + docker.1ms.run"
+  else
+    GHCR_MIRROR=""
+    DOCKER_MIRROR=""
+    info "直连官方镜像源"
   fi
 fi
 
@@ -146,36 +159,6 @@ if [ "$MODE" = "1" ] && [ "$BUILD_MODE" = "pull" ]; then
   for f in docker-compose.yml docker-compose.pull.yml; do
     curl -fsSL "$RAW_BASE/$f" -o "$DIR/$f" && ok "$f" || fail "下载 $f 失败"
   done
-  # 使用 ghcr 镜像加速
-  sed -i '' "s|ghcr.io/|ghcr.nju.edu.cn/|" "$DIR/docker-compose.pull.yml" 2>/dev/null || \
-  sed -i "s|ghcr.io/|ghcr.nju.edu.cn/|" "$DIR/docker-compose.pull.yml" 2>/dev/null
-elif [ "$MODE" = "2" ] || [ "$BUILD_MODE" = "build" ]; then
-  # 源码构建 / PM2：克隆完整仓库
-  tit "克隆仓库"
-  if [ -d "$DIR/.git" ]; then
-    info "仓库已存在，同步最新..."
-    if (cd "$DIR" && git fetch origin main && git reset --hard origin/main); then
-      ok "已更新"
-    else
-      info "GitHub 超时，尝试镜像..."
-      MIRROR_URL="$GIT_URL"
-      (cd "$DIR" && git remote add mirror "$MIRROR_URL" 2>/dev/null || git remote set-url mirror "$MIRROR_URL" && git fetch mirror main && git reset --hard mirror/main) && ok "已更新（镜像）" || info "同步失败，使用现有代码"
-    fi
-  else
-    git clone "$GIT_URL" "$DIR" && ok "克隆完成"
-  fi
-fi
-
-cd "$DIR" || fail "无法进入目录 $DIR"
-
-# ═══ Docker ═══
-if [ "$MODE" = "1" ]; then
-  command -v docker &>/dev/null || fail "请先安装 Docker"
-  docker compose version &>/dev/null || fail "需要 Docker Compose"
-  ok "Docker 已就绪"
-
-  COMPOSE_F="-f docker-compose.yml -f docker-compose.$BUILD_MODE.yml"
-
   # 修改端口
   if [ "$APP_PORT" != "3000" ]; then
     for f in docker-compose.yml docker-compose.$BUILD_MODE.yml; do
@@ -192,6 +175,18 @@ DB_PASSWORD=lojpass
 EOF
     ok ".env 已创建"
   }
+  # 更新镜像加速配置
+  if [ -n "$GHCR_MIRROR" ]; then
+    grep -q 'GHCR_MIRROR=' "$DIR/.env" 2>/dev/null && \
+      sed -i '' "s|GHCR_MIRROR=.*|GHCR_MIRROR=$GHCR_MIRROR|" "$DIR/.env" 2>/dev/null || \
+      echo "GHCR_MIRROR=$GHCR_MIRROR" >> "$DIR/.env"
+    grep -q 'DOCKER_MIRROR=' "$DIR/.env" 2>/dev/null && \
+      sed -i '' "s|DOCKER_MIRROR=.*|DOCKER_MIRROR=$DOCKER_MIRROR|" "$DIR/.env" 2>/dev/null || \
+      echo "DOCKER_MIRROR=$DOCKER_MIRROR" >> "$DIR/.env"
+  else
+    sed -i '' '/^GHCR_MIRROR=/d' "$DIR/.env" 2>/dev/null || sed -i '/^GHCR_MIRROR=/d' "$DIR/.env" 2>/dev/null || true
+    sed -i '' '/^DOCKER_MIRROR=/d' "$DIR/.env" 2>/dev/null || sed -i '/^DOCKER_MIRROR=/d' "$DIR/.env" 2>/dev/null || true
+  fi
 
   tit "构建 & 启动"
   PGSQL="--profile pgsql"
