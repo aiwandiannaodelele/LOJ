@@ -121,13 +121,15 @@ echo ""
 title "LOJ Docker 部署"
 sed -i '' "s/\"3000:3000\"/\"${APP_PORT}:3000\"/" docker-compose.yml 2>/dev/null || sed -i "s/\"3000:3000\"/\"${APP_PORT}:3000\"/" docker-compose.yml 2>/dev/null
 
-if [ "$DB_PROVIDER" = "postgresql" ]; then
-  info "启动 PostgreSQL + LOJ..."
-  docker compose --profile pgsql up -d --build
-else
-  info "启动 SQLite + LOJ..."
-  docker compose up -d --build
-fi
+  if [ "$DB_PROVIDER" = "postgresql" ]; then
+    info "启动 PostgreSQL + LOJ..."
+    docker compose pull 2>/dev/null || docker compose build
+    docker compose --profile pgsql up -d
+  else
+    info "启动 SQLite + LOJ..."
+    docker compose pull 2>/dev/null || docker compose build
+    docker compose up -d
+  fi
 
 if [ $? -ne 0 ]; then
   echo ""

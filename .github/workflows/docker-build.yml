@@ -1,0 +1,49 @@
+name: Docker Build
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'README*'
+      - '**.md'
+      - '.gitignore'
+      - 'AGENTS.md'
+      - 'CLAUDE.md'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/aiwandiannaodelele/loj:latest
+            ghcr.io/aiwandiannaodelele/loj:${{ github.sha }}
+          build-args: |
+            DB_PROVIDER=postgresql
+            DATABASE_URL=postgres://loj:lojpass@postgres:5432/loj
+
+      - name: Make package public
+        continue-on-error: true
+        run: |
+          curl -s -X PATCH \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/user/packages/container/loj/visibility" \
+            -d '{"visibility":"public"}'

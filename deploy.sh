@@ -147,7 +147,9 @@ EOF
   tit "构建 & 启动"
   PGSQL="--profile pgsql"
   grep -q 'DB_PROVIDER=sqlite' .env 2>/dev/null && PGSQL=""
-  docker compose $PGSQL up -d --build || \
+  # 先尝试拉取预构建镜像，失败则本地构建
+  (docker compose $PGSQL pull && docker compose $PGSQL up -d) || \
+    (docker compose $PGSQL build && docker compose $PGSQL up -d) || \
     fail "Docker 启动失败，查看日志: docker compose logs"
 
   # 恢复 docker-compose.yml，保持仓库干净

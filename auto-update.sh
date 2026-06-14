@@ -27,7 +27,9 @@ if [ "$LOCAL" != "$REMOTE_HASH" ] && [ -n "$REMOTE_HASH" ]; then
   git pull mirror "$BRANCH"
   PGSQL="--profile pgsql"
   grep -q 'DB_PROVIDER=sqlite' .env 2>/dev/null && PGSQL=""
-  docker compose $PGSQL up -d --build
+  # 拉取预构建镜像，失败则本地构建
+  docker compose $PGSQL pull || docker compose $PGSQL build
+  docker compose $PGSQL up -d
   echo "[$(date)] Deployed!" >> "$LOG"
 else
   echo "[$(date)] Up to date." >> "$LOG"
